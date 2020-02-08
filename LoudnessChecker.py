@@ -8,11 +8,14 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.filedialog as filedialog
 import tkinter.messagebox as messagebox
+import matplotlib.pyplot as plt
 
 ver = "Ver. 1.0"
 
 # 拡張子
-codecs = ["mp4", "flv", "mpg", "m2ts", "vob", "avi", "mov", "mkv", "tc7", "webm", "wmv", "aac", "m4a", "mp1", "mp2", "mp3", "ogg", "wav", "wma", "flac", "3gp", "3g2", "ac3", "aif", "aiff", "aifc", "alac", "opus", "asf"]
+audio_codecs = ["aac", "m4a", "mp1", "mp2", "mp3", "ogg", "wav", "wma", "flac", "ac3", "aif", "aiff", "aifc", "alac", "opus", "asf"]
+video_codecs = ["mp4", "flv", "mpg", "m2ts", "vob", "avi", "mov", "mkv", "tc7", "webm", "wmv", "3gp", "3g2"]
+codecs = audio_codecs + video_codecs
 codecs.sort()
 typ = []
 typ.append(("", "*"))
@@ -139,16 +142,36 @@ class FiledialogSampleApp(ttk.Frame):
                 else:
                         self.analyzeButton.config(state="disable", text="Runing…")
                 
-                res = self.audioAnalyze()
+                res, time, mLoud, sLoud, iLoud = self.audioAnalyze()
 
-                if res == "break":
-                        return "break"
+                if res == "b":
+                        return
+                
+                self.analyzeButton.config(state="active", text="Analyze") # ボタン復活
 
                 self.textbox.delete("1.0", "end")
                 for i in range(len(res)):
                         self.textbox.insert(str(i+1)+".0", res[i]+"\n") # 結果出力
                 
-                self.analyzeButton.config(state="active", text="Analyze")
+                g_m = plt.plot(time, mLoud, label="Momentary", color="blue")
+                g_s = plt.plot(time, sLoud, label="Short-term", color="yellow")
+                g_i = plt.plot(time, iLoud, label="Integrated", color="red")
+                line14 = plt.hlines([-14], time[0], time[len(time)-1], "black", linestyles="dashed")
+                
+                RL = iLoud[len(iLoud)-1] - 10 # 下方向の表示範囲
+                RH = max(mLoud) + 5 # 上方向の表示範囲
+                if RL > -14:
+                        RL = -16
+                        RH = max(mLoud) + 3
+                if RH < -14:
+                        RL = iLoud[len(iLoud)-1] - 3
+                        RH = -12
+                plt.ylim(RL, RH)
+                plt.title("Result", fontsize=18)
+                plt.ylabel("Loudness [LUFS]")
+                plt.xlabel("Time [s]")
+                plt.legend()
+                plt.show()
         
 
 
@@ -190,6 +213,7 @@ class FiledialogSampleApp(ttk.Frame):
 
                 processing = [] # ログの情報を編集するために使う
                 time = []
+                iLoud = [] # Integrated loudness
                 mLoud = [] # Momentary loudness
                 sLoud = [] # Short-term loudness
 
@@ -204,15 +228,19 @@ class FiledialogSampleApp(ttk.Frame):
                         processing[i] = deleteAlphabet(processing[i]) # ここまでの状態→"(なんちゃら):t:TARGET:M:S:I:LRA"
                         splt = processing[i].split(":") # ここまでの状態→[(なんちゃら), t, TARGET, M, S, I, LRA]
                         
-                        time.append(splt[1])
+                        time.append(round(float(splt[1]), 1))
                         if splt[3] == '':
-                                mLoud.append(-1000000.0)
+                                mLoud.append(-200.0)
                         else:
                                 mLoud.append(float(splt[3]))
                         if splt[4] == '':
-                                sLoud.append(-1000000.0)
+                                sLoud.append(-200.0)
                         else:
                                 sLoud.append(float(splt[4]))
+                        if splt[5] == '':
+                                iLoud.append(-200.0)
+                        else:
+                                iLoud.append(float(splt[5]))
                 
                 max_mLoud_value = str(max(mLoud))
                 max_mLoud_index = mLoud.index(max(mLoud)) # Momentary Loudnessの最大値とそのインデックスを取得
@@ -270,7 +298,7 @@ class FiledialogSampleApp(ttk.Frame):
                 res[10] = "   - High                : {} LUFS".format(summary[3])
                 res[11] = "   - Low                 : {} LUFS".format(summary[2])
 
-                return res
+                return res, time, mLoud, sLoud, iLoud
         
 
 
