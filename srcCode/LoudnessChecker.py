@@ -11,7 +11,7 @@ import tkinter.messagebox as messagebox
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
-ver = "Ver. 1.1"
+ver = "Ver. 1.2"
 
 # 拡張子
 audio_codecs = ["aac", "m4a", "mp1", "mp2", "mp3", "ogg", "wav", "wma", "flac", "ac3", "aif", "aiff", "aifc", "alac", "opus", "asf"]
@@ -24,11 +24,31 @@ for i in codecs:
         typ.append((i, '*.'+i)) # ダイアログを開いたときに拡張子を指定できるようにする
 
 
+# matplotlibのフォント設定
+rcParams['font.family'] = 'sans-serif' # フォント設定
+rcParams['font.sans-serif'] = ['Hiragino Maru Gothic Pro', 'Yu Gothic', 'Meirio', 'Takao', 'IPAexGothic', 'IPAPGothic', 'VL PGothic', 'Noto Sans CJK JP']
+
+
 # リソースファイルを参照する関数（参考：https://qiita.com/firedfly/items/f6de5cfb446da4b53eeb）
 def resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.abspath("."), relative_path)
+
+
+# 文字列がfloatに変換できるかどうかを判断する関数
+def is_float(s):
+  try:
+    float(s)
+  except:
+    return False
+  return True
+
+# スペースの数を調整の関数
+def adjustSpace(str):
+        if len(str) < 5:
+                str = " "*(5-len(str)) + str
+        return str
 
 
 
@@ -97,35 +117,48 @@ class FiledialogSampleApp(ttk.Frame):
                 self.pack()
 
                 # Widget用変数を定義
-                self.filename = tk.StringVar()
-                self.textbox = tk.Text(self)
-                self.filenameEntry = ttk.Entry(self,text="", width=100, textvariable= self.filename)
-                self.analyzeButton = ttk.Button(self,text="Analyze",command = self.startAnalyze)
-                self.setDir = os.getcwd()
+                self.filename = tk.StringVar() # 入力したパスを入れる変数
+                self.bln = tk.BooleanVar() # Targetを出力するかどうか
+                self.bln.set(True) # 初期設定：Targetを出力する
+                self.target = tk.StringVar() # Relative LoudnessのTargetを入れる変数
+                self.target.set("-14") # Targetを-14 LUFSに設定
+                self.setDir = os.getcwd() # カレントディレクトリ取得
 
-                label_title = ttk.Label(self, text="Loudness Checker", font=("","20","bold"))
+                self.filenameEntry = ttk.Entry(self,text="", font=("","10"), width=100, textvariable= self.filename) # パス入力
+                self.targetEntry = ttk.Entry(self,text="", font=("","10"), width=100, justify="center", textvariable= self.target) # Target入力
+                self.targetCheck = tk.Checkbutton(self,text="Set a target of relative loudness.", font=("","12"), variable=self.bln) # Relative Loudnessを使うかチェック
+                self.analyzeButton = ttk.Button(self,text="Analyze",command = self.startAnalyze) # アナライズボタン
+                self.textbox = tk.Text(self) # Resultのテキストボックス
+
+                label_title = ttk.Label(self, text="Loudness Checker", font=("","20","bold")) # タイトル
                 label_title.pack(side="top", pady=5)
 
-                label_ex = ttk.Label(self, justify="center",text="- {} -\nAlgorithm: EBU R 128\n".format(ver))
+                label_ex = ttk.Label(self, justify="center",text="- {} -\nAlgorithm: EBU R128\n".format(ver), font=("","12")) # 説明文1
                 label_ex.pack(side="top")
                 
-                label_path = ttk.Label(self,justify="center",text="【Audio / Video file path】", font=("","10","bold"))
+                label_path = ttk.Label(self,justify="center",text="【Audio / Video file path】", font=("","14","bold")) # 項目1
                 label_path.pack(side="top")
 
-                label_file = ttk.Label(self,justify="center",text="Formats: wav, mp3, ogg, flac, mp4, avi, flv, etc.")
-                label_file.pack(side="top")
-                # textvariableにWidget用の変数を定義することで変数の値が変わるとテキストも動的に変わる
-                self.filenameEntry.pack(side="top", padx=5)
+                label_Codecs = ttk.Label(self,justify="center",text="Codecs: wav, mp3, ogg, flac, mp4, avi, flv, etc.", font=("","12")) # 対応コーデック説明
+                label_Codecs.pack(side="top")
 
-                openButton = ttk.Button(self,text="Browse…",command = self.openFileDialog)
+                self.filenameEntry.pack(side="top", padx=5) # パス入力ウィジェット配置
+
+                openButton = ttk.Button(self,text="Browse…",command = self.openFileDialog) # 参照ボタン
                 openButton.pack(side="top")
+                
+                label_target = ttk.Label(self,justify="center",text="\n【Target (LUFS)】", font=("","14","bold")) # 項目2
+                label_target.pack(side="top")
 
-                self.analyzeButton.pack(side="top")
+                self.targetCheck.pack(side="top")
 
-                label_res = ttk.Label(self,text="\n【Result】", font=("","10","bold"))
+                self.targetEntry.pack(side="top", padx=5) # Target入力ウィジェット配置
+
+                self.analyzeButton.pack(side="top") # 分析ボタンウィジェット配置
+
+                label_res = ttk.Label(self,text="\n【Result】", font=("","14","bold"))
                 label_res.pack(side="top")
-
-                self.textbox.pack(side="top", padx=5, pady=5)
+                self.textbox.pack(side="top", padx=5, pady=5) # Resultウィジェット配置
 
         # ファイルダイアログを開いてfilenameEntryに反映させる
         def openFileDialog(self):
@@ -138,10 +171,18 @@ class FiledialogSampleApp(ttk.Frame):
         # アナライズボタンクリック時
         def startAnalyze(self):
                 if self.filename.get() == "":
-                        messagebox.showerror("ERROR", "Please enter the path!")
+                        messagebox.showerror("ERROR", "Please enter a valid path!")
                         return "break"
-                else:
-                        self.analyzeButton.config(state="disable", text="Runing…")
+                
+                if self.bln.get() == True:
+                        target = self.targetEntry.get()
+                        if is_float(target) == False:
+                                messagebox.showerror("ERROR", "Please set a valid target!")
+                                return "break"
+                        target = float(target)
+
+                self.analyzeButton.config(state="disable", text="Runing…") # ボタン止める
+                plt.close() # グラフ開いてたら閉じる
                 
                 res, time, mLoud, sLoud, iLoud, audioName = self.audioAnalyze()
 
@@ -155,22 +196,20 @@ class FiledialogSampleApp(ttk.Frame):
                         self.textbox.insert(str(i+1)+".0", res[i]+"\n") # 結果出力
                 
                 # グラフ出力
-                rcParams['font.family'] = 'sans-serif' # フォント設定
-                rcParams['font.sans-serif'] = ['Hiragino Maru Gothic Pro', 'Yu Gothic', 'Meirio', 'Takao', 'IPAexGothic', 'IPAPGothic', 'VL PGothic', 'Noto Sans CJK JP']
-
                 g_m = plt.plot(time, mLoud, label="Momentary", color="blue")
                 g_s = plt.plot(time, sLoud, label="Short-term", color="yellow")
                 g_i = plt.plot(time, iLoud, label="Integrated", color="red")
-                line14 = plt.hlines([-14], time[0], time[len(time)-1], "black", linestyles="dashed")
                 
                 RL = iLoud[round(len(iLoud)/2)] - 10 # 下方向の表示範囲
                 RH = max(mLoud) + 5 # 上方向の表示範囲
-                if RL > -14:
-                        RL = -16
-                        RH = max(mLoud) + 3
-                if RH < -14:
-                        RL = iLoud[len(iLoud)-1] - 3
-                        RH = -12
+                if self.bln.get() == True:
+                        targetLine = plt.hlines([target], time[0], time[len(time)-1], "black", linestyles="dashed")
+                        if RL > target:
+                                RL = target - 2
+                                RH = max(mLoud) + 3
+                        if RH < target:
+                                RL = iLoud[len(iLoud)-1] - 3
+                                RH = target + 2
                 plt.ylim(RL, RH)
                 plt.title("Result - {}".format(audioName), fontsize=18)
                 plt.ylabel("Loudness [LUFS]")
@@ -189,9 +228,9 @@ class FiledialogSampleApp(ttk.Frame):
 
                 ext = path[path.rfind(".")+1 : len(path)-1] # 拡張子取得
                 if ext not in codecs:
-                        messagebox.showerror("ERROR", "This file is invalid!")
+                        messagebox.showerror("ERROR", "This file or path is invalid!")
                         self.analyzeButton.config(state="active", text="Analyze")
-                        return "break"
+                        return "break!" 
 
                 cmd = ["" for i in range(2)]
                 cmd[0] = "start ffmpeg -report -hide_banner -nostats -i {} -filter_complex ebur128=peak=true -f null -".format(path) # ラウドネス関連の情報取得
@@ -247,10 +286,13 @@ class FiledialogSampleApp(ttk.Frame):
                         else:
                                 iLoud.append(float(splt[5]))
                 
-                max_mLoud_value = str(max(mLoud))
+                max_mLoud_value = str(max(mLoud)) # Momentary Loudnessの最大値を取得
+                max_mLoud_value = adjustSpace(max_mLoud_value) # スペース調整
                 max_mLoud_index = mLoud.index(max(mLoud)) # Momentary Loudnessの最大値とそのインデックスを取得
-                max_sLoud_value = str(max(sLoud))
-                max_sLoud_index = sLoud.index(max(sLoud)) # Short-term Loudnessの最大値とそのインデックスを取得
+
+                max_sLoud_value = str(max(sLoud)) # Short-term Loudnessの最大値を取得
+                max_sLoud_value = adjustSpace(max_sLoud_value) # スペース調整
+                max_sLoud_index = sLoud.index(max(sLoud)) # Short-term Loudnessの最大値のインデックスを取得
 
 
                 ### ラウドネス関連情報の取得 ###
@@ -267,6 +309,7 @@ class FiledialogSampleApp(ttk.Frame):
                 for i in range(len(summary)):
                         summary[i] = deleteStr(summary[i], " ", "\n", ":")
                         summary[i] = deleteAlphabet(summary[i]) # こうなる→[Integrated Loudness, Loudness Range, - low, - high, True Peak]
+                        summary[i] = adjustSpace(summary[i]) # スペース調整
 
 
                 ### 通常ピークの取得 ###
@@ -280,7 +323,9 @@ class FiledialogSampleApp(ttk.Frame):
 
                 # 通常ピークが（なぜか）0を越えたときの対策
                 if float(PK) > 0:
-                        PK = "0.0"
+                        PK = "  0.0"
+                else:
+                        PK = adjustSpace(PK) # スペース調整
 
 
 
@@ -289,19 +334,32 @@ class FiledialogSampleApp(ttk.Frame):
                 for i in range(len(cmd)):
                         os.remove(logfiles[i])
                 
-                res = ["" for i in range(13)]
+                res = ["" for i in range(18)]
+                n = 0
                 res[0] = "Title: {}".format(audioName)
                 res[1] = ""
-                res[2] = "Peak                     : {} dBFS".format(PK)
-                res[3] = "True Peak                : {} dBTP ".format(summary[4])
-                res[4] = ""
-                res[5] = "Integrated Loudness      : {} LUFS".format(summary[0])
-                res[6] = "Max. Momentary Loudness  : {} LUFS (time: {} s)".format(max_mLoud_value, time[max_mLoud_index])
-                res[7] = "Max. Short-term Loudness : {} LUFS (time: {} s)".format(max_sLoud_value, time[max_sLoud_index])
-                res[8] = ""
-                res[9] = "Loudness Range           :  {} LU".format(summary[1])
-                res[10] = "   - High                : {} LUFS".format(summary[3])
-                res[11] = "   - Low                 : {} LUFS".format(summary[2])
+                res[2] = "Peak"
+                res[3] = "  Sample Peak               :  {} dBFS".format(PK)
+                res[4] = "  True Peak                 :  {} dBTP ".format(summary[4])
+                res[5] = ""
+                res[6] = "Absolute Loudness"
+                res[7] = "  Integrated Loudness       :  {} LUFS".format(summary[0])
+                res[8] = "  Max. Momentary Loudness   :  {} LUFS (time: {} s)".format(max_mLoud_value, time[max_mLoud_index])
+                res[9] = "  Max. Short-term Loudness  :  {} LUFS (time: {} s)".format(max_sLoud_value, time[max_sLoud_index])
+                res[10] = ""
+                
+                if self.bln.get() == True:
+                        LU = str(round(float(summary[0]) - float(self.targetEntry.get()), 1))
+                        LU = adjustSpace(LU)
+                        res[11] = "Relative Loudness"
+                        res[12] = "  Integrated Loudness       :  {} LU".format(LU)
+                        res[13] = ""
+                        n = 3
+                
+                res[11+n] = "Loudness Range (LRA)"
+                res[12+n] = "  Loudness Range            :  {} LU".format(summary[1])
+                res[13+n] = "    - High                  :  {} LUFS".format(summary[3])
+                res[14+n] = "    - Low                   :  {} LUFS".format(summary[2])
 
                 return res, time, mLoud, sLoud, iLoud, audioName
         
@@ -315,7 +373,7 @@ if __name__ == '__main__':
                         os.remove(logfiles[i])
 
         app  = tk.Tk()
-        app.geometry("430x440")
+        app.geometry("430x620")
         app.resizable(0,0)
         app.title("Loudness Checker {}".format(ver))
 
