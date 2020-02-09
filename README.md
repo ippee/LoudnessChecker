@@ -1,13 +1,25 @@
 # Loudness Checker
-「**Loudness Checker**」とは、入力したオーディオやビデオのピークやラウドネス（アルゴリズム：EBU R128）を計測するプログラムおよびアプリです  
-**本アプリの使用にはFFmpegのインストールが必須です**、各自でインストールをお願いいたします（ググれば方法が出てきます）  
+「**Loudness Checker**」とは、入力したオーディオやビデオのピークやラウドネス（アルゴリズム：EBU R128）を計測するプログラムおよびアプリケーションです  
+　  
+**本アプリの使用にはFFmpegのインストールが必須です**、各自でインストールをお願いいたします  
+（ググれば方法が出てきます、下にもwindowsのリンクを貼っています）  
 このアプリ関係なしにFFmpegは超有能なのでインストールしましょう  
 　  
 DTMをやっていると、色んな曲のラウドネスを計測したくなることが多々あります  
 ただ、その度にDAWを起動して、プロジェクト立ち上げて、楽曲を読み込んで……  
 っていう手間が死ぬほど面倒だったので、スタンドアロンで動くアプリを作りました  
-このアプリが楽曲制作の手助けになれば幸いです
-
+このアプリが楽曲制作の手助けになれば幸いです  
+　  
+**LoudnessChecker.exe**  
+**https://drive.google.com/open?id=1yMVZuCFk6LEahGO7TRchBEN8EyZCmPeJ**  
+　  
+**FFmpeg**  
+**https://www.ffmpeg.org/**  
+　  
+**【windows】FFmpegをインストールする手順｜新卒エンジニアの開発日記**  
+**https://fukatsu.tech/windows-ffmpeg**  
+　  
+　  
 ![GUI](https://raw.githubusercontent.com/ippee/LoudnessChecker/master/Picture/GUI.jpg)
 
 ![Plot](https://raw.githubusercontent.com/ippee/LoudnessChecker/master/Picture/plot.jpg)
@@ -15,8 +27,7 @@ DTMをやっていると、色んな曲のラウドネスを計測したくな�
 　  
 　  
 ## 使い方
-色々とファイルがありますが、アプリ単体で使う場合は.exeファイルだけあれば大丈夫です  
-アプリはWindows専用です  
+アプリ単体で使う場合は.exeファイルだけあれば大丈夫です（アプリはWindows専用です）  
 ソースコードを使うならPythonが必要です（3.6以外のバージョンで動くかは不明、Windows以外のOSで動くかも不明）  
 　  
 使い方は何も難しいことはなくて、
@@ -76,7 +87,6 @@ FFmpeg自体はもっと多くのファイルに対応していますが、こ�
 2. 例のごとく「動けばなんでもいいだろ精神」で作っているので、コードの見やすさとかほとんど考えていないです()  
 見にくかったらごめんなさい  
 見やすいコードを書けるようになったら改訂する<u>かも</u>しれません  
-　  
 3. <font color="red">**本アプリを使用していかなる損害が発生したとしても、私は一切の責任を負いかねますのでご了承ください**</font>  
 　  
 　  
