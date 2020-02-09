@@ -11,7 +11,7 @@ import tkinter.messagebox as messagebox
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
-ver = "Ver. 1.2"
+ver = "Ver. 1.3"
 
 # 拡張子
 audio_codecs = ["aac", "m4a", "mp1", "mp2", "mp3", "ogg", "wav", "wma", "flac", "ac3", "aif", "aiff", "aifc", "alac", "opus", "asf"]
@@ -125,8 +125,8 @@ class FiledialogSampleApp(ttk.Frame):
                 self.setDir = os.getcwd() # カレントディレクトリ取得
 
                 self.filenameEntry = ttk.Entry(self,text="", font=("","10"), width=100, textvariable= self.filename) # パス入力
-                self.targetEntry = ttk.Entry(self,text="", font=("","10"), width=100, justify="center", textvariable= self.target) # Target入力
-                self.targetCheck = tk.Checkbutton(self,text="Set a target of relative loudness.", font=("","12"), variable=self.bln) # Relative Loudnessを使うかチェック
+                self.targetCheck = tk.Checkbutton(self,text="Set a target of relative loudness.", font=("","12"), variable=self.bln, command=self.setBln) # Relative Loudnessを使うかチェック
+                self.targetEntry = ttk.Entry(self,text="", font=("","10"), width=100, justify="center", textvariable= self.target, state="active") # Target入力
                 self.analyzeButton = ttk.Button(self,text="Analyze",command = self.startAnalyze) # アナライズボタン
                 self.textbox = tk.Text(self) # Resultのテキストボックス
 
@@ -136,7 +136,7 @@ class FiledialogSampleApp(ttk.Frame):
                 label_ex = ttk.Label(self, justify="center",text="- {} -\nAlgorithm: EBU R128\n".format(ver), font=("","12")) # 説明文1
                 label_ex.pack(side="top")
                 
-                label_path = ttk.Label(self,justify="center",text="【Audio / Video file path】", font=("","14","bold")) # 項目1
+                label_path = ttk.Label(self,justify="center",text="【Audio / Video file path】", font=("","14","bold")) # Auidio / Video file path
                 label_path.pack(side="top")
 
                 label_Codecs = ttk.Label(self,justify="center",text="Codecs: wav, mp3, ogg, flac, mp4, avi, flv, etc.", font=("","12")) # 対応コーデック説明
@@ -147,7 +147,7 @@ class FiledialogSampleApp(ttk.Frame):
                 openButton = ttk.Button(self,text="Browse…",command = self.openFileDialog) # 参照ボタン
                 openButton.pack(side="top")
                 
-                label_target = ttk.Label(self,justify="center",text="\n【Target (LUFS)】", font=("","14","bold")) # 項目2
+                label_target = ttk.Label(self,justify="center",text="\n【Target (LUFS)】", font=("","14","bold")) # Target
                 label_target.pack(side="top")
 
                 self.targetCheck.pack(side="top")
@@ -156,7 +156,7 @@ class FiledialogSampleApp(ttk.Frame):
 
                 self.analyzeButton.pack(side="top") # 分析ボタンウィジェット配置
 
-                label_res = ttk.Label(self,text="\n【Result】", font=("","14","bold"))
+                label_res = ttk.Label(self,text="\n【Result】", font=("","14","bold")) # Result
                 label_res.pack(side="top")
                 self.textbox.pack(side="top", padx=5, pady=5) # Resultウィジェット配置
 
@@ -167,6 +167,12 @@ class FiledialogSampleApp(ttk.Frame):
                         return "break"
                 self.setDir = file[0:file.rfind( "/" ) + 1]
                 self.filename.set(file)
+        
+        def setBln(self):
+                if self.bln.get() == True:
+                        self.targetEntry.config(state="active")
+                else:
+                        self.targetEntry.config(state="disable")
         
         # アナライズボタンクリック時
         def startAnalyze(self):
@@ -256,15 +262,14 @@ class FiledialogSampleApp(ttk.Frame):
                 log = readLog(logfiles[0])
 
                 processing = [] # ログの情報を編集するために使う
-                time = []
-                iLoud = [] # Integrated loudness
-                mLoud = [] # Momentary loudness
-                sLoud = [] # Short-term loudness
-
-                for i in range(len(log)): # mLoudとsLoudの情報が載っている行だけ残す
-                        if "TARGET:-23 LUFS" in log[i]:
-                                processing.append(log[i])
-
+                for i in log:
+                        if "TARGET:-23 LUFS" in i: # mLoudとsLoudの情報が載っている行だけ残す
+                                processing.append(i)
+                
+                time = [0 for i in range(len(processing))] # time
+                iLoud = [0 for i in range(len(processing))] # Integrated loudness
+                mLoud = [0 for i in range(len(processing))] # Momentary loudness
+                sLoud = [0 for i in range(len(processing))] # Short-term loudness
                 for i in range(len(processing)): # いらん文字消して、欲しい数値だけ取得
                         processing[i] = processing[i].split("FTPK")[0] # FTPK以降の文字列をカット
 
@@ -272,19 +277,19 @@ class FiledialogSampleApp(ttk.Frame):
                         processing[i] = deleteAlphabet(processing[i]) # ここまでの状態→"(なんちゃら):t:TARGET:M:S:I:LRA"
                         splt = processing[i].split(":") # ここまでの状態→[(なんちゃら), t, TARGET, M, S, I, LRA]
                         
-                        time.append(round(float(splt[1]), 1))
+                        time[i] = round(float(splt[1]), 1)
                         if splt[3] == '':
-                                mLoud.append(-200.0)
+                                mLoud[i] = -200.0
                         else:
-                                mLoud.append(float(splt[3]))
+                                mLoud[i] = float(splt[3])
                         if splt[4] == '':
-                                sLoud.append(-200.0)
+                                sLoud[i] = -200.0
                         else:
-                                sLoud.append(float(splt[4]))
+                                sLoud[i] = float(splt[4])
                         if splt[5] == '':
-                                iLoud.append(-200.0)
+                                iLoud[i] = -200.0
                         else:
-                                iLoud.append(float(splt[5]))
+                                iLoud[i] = float(splt[5])
                 
                 max_mLoud_value = str(max(mLoud)) # Momentary Loudnessの最大値を取得
                 max_mLoud_value = adjustSpace(max_mLoud_value) # スペース調整
@@ -349,7 +354,7 @@ class FiledialogSampleApp(ttk.Frame):
                 res[10] = ""
                 
                 if self.bln.get() == True:
-                        LU = str(round(float(summary[0]) - float(self.targetEntry.get()), 1))
+                        LU = str(round(float(summary[0]) - float(self.targetEntry.get()), 1)) # iLoud(absolute) - target = iLoud(relative)
                         LU = adjustSpace(LU)
                         res[11] = "Relative Loudness"
                         res[12] = "  Integrated Loudness       :  {} LU".format(LU)
