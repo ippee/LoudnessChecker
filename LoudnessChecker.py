@@ -3,6 +3,7 @@
 import sys
 import re
 import os
+import pydub
 from time import sleep
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -11,17 +12,8 @@ import tkinter.messagebox as messagebox
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
-ver = "Ver. 1.3"
+ver = "Ver. 1.4"
 
-# 拡張子
-audio_codecs = ["aac", "m4a", "mp1", "mp2", "mp3", "ogg", "wav", "wma", "flac", "ac3", "aif", "aiff", "aifc", "alac", "opus", "asf"]
-video_codecs = ["mp4", "flv", "mpg", "m2ts", "vob", "avi", "mov", "mkv", "tc7", "webm", "wmv", "3gp", "3g2"]
-codecs = audio_codecs + video_codecs
-codecs.sort()
-typ = []
-typ.append(("", "*"))
-for i in codecs:
-        typ.append((i, '*.'+i)) # ダイアログを開いたときに拡張子を指定できるようにする
 
 
 # matplotlibのフォント設定
@@ -36,19 +28,13 @@ def resource_path(relative_path):
     return os.path.join(os.path.abspath("."), relative_path)
 
 
-# 文字列がfloatに変換できるかどうかを判断する関数
+# 文字列がfloatに変換できるかどうかを判断する関数（入力されたTargetが適切かをチェックするため）
 def is_float(s):
   try:
     float(s)
   except:
     return False
   return True
-
-# スペースの数を調整の関数
-def adjustSpace(str):
-        if len(str) < 5:
-                str = " "*(5-len(str)) + str
-        return str
 
 
 
@@ -106,7 +92,13 @@ def searchIndex(list, keyword):
         for i in range(len(list)):
                 if keyword in list[i]:
                         index.append(i)
-        return max(index) # 必要なのはそのうちの一番下の行のみ
+        return index
+
+# スペースの数を調整の関数
+def adjustSpace(str):
+        if len(str) < 5:
+                str = " "*(5-len(str)) + str
+        return str
 
 
 
@@ -162,7 +154,7 @@ class FiledialogSampleApp(ttk.Frame):
 
         # ファイルダイアログを開いてfilenameEntryに反映させる
         def openFileDialog(self):
-                file = filedialog.askopenfilename(filetypes = typ, initialdir = self.setDir)
+                file = filedialog.askopenfilename(initialdir = self.setDir)
                 if file == "":
                         return "break"
                 self.setDir = file[0:file.rfind( "/" ) + 1]
@@ -227,16 +219,21 @@ class FiledialogSampleApp(ttk.Frame):
 
         # 音声処理
         def audioAnalyze(self):
-                # ffmpegコマンド実行
-                path_0 = self.filenameEntry.get()
-                path = '"{}"'.format(path_0) # タイトルにスペースがあるとバグるんで、その対策
-                audioName = path[path.rfind( "/" ) + 1 : len(path)-1] # ファイル名取得
+                path = self.filenameEntry.get()
+                path = path.replace('"', '') # pathに " が含まれていても一旦消す
+                path = path.replace("\\", "/") # スラッシュを統一
+                audioName = path[path.rfind( "/" ) + 1 : len(path)] # ファイル名取得
 
-                ext = path[path.rfind(".")+1 : len(path)-1] # 拡張子取得
-                if ext not in codecs:
+                # 入力されたファイルがffmpegに対応しているかチェック（もっといい方法を考え中）
+                try:
+                        pydub.AudioSegment.from_file(path)
+                except (IndexError, pydub.exceptions.CouldntDecodeError):
                         messagebox.showerror("ERROR", "This file or path is invalid!")
                         self.analyzeButton.config(state="active", text="Analyze")
-                        return "break!" 
+                        return "break!"
+                
+                # ffmpegコマンド実行
+                path = '"{}"'.format(path) # タイトルにスペースがあるとコマンドがバグるんで、その対策
 
                 cmd = ["" for i in range(2)]
                 cmd[0] = "start ffmpeg -report -hide_banner -nostats -i {} -filter_complex ebur128=peak=true -f null -".format(path) # ラウドネス関連の情報取得
@@ -301,7 +298,7 @@ class FiledialogSampleApp(ttk.Frame):
 
 
                 ### ラウドネス関連情報の取得 ###
-                summary_index = searchIndex(log, "Summary:") # ログの中から"Summary:"って書かれた行を探す
+                summary_index = max(searchIndex(log, "Summary:")) # ログの中から"Summary:"って書かれた行を探す
                 summary = log[summary_index+2:summary_index+14] # 最後の出力結果のある行を取得
 
                 # いらん行を指定して消す
@@ -319,18 +316,30 @@ class FiledialogSampleApp(ttk.Frame):
 
                 ### 通常ピークの取得 ###
                 log = readLog(logfiles[1]) # 読み込むログを変更
-                PK_index = searchIndex(log, "Sample peak:") # "Sample peak:"って書かれた行を探す
+                PK_index = max(searchIndex(log, "Sample peak:")) # "Sample peak:"って書かれた行を探す
                 PK = log[PK_index+1] # 通常ピークの行を取得
 
                 # いらん文字消す
                 PK = deleteStr(PK, " ", "\n", ":")
                 PK = deleteAlphabet(PK)
 
-                # 通常ピークが（なぜか）0を越えたときの対策
-                if float(PK) > 0:
-                        PK = "  0.0"
-                else:
-                        PK = adjustSpace(PK) # スペース調整
+                # 入力ファイルのビット深度を取得
+                bit_rate_index = min(searchIndex(log, "Audio: "))
+                bit_rate = log[bit_rate_index]
+
+                # 通常ピークが（なぜか）0dBFSを越えたときの対策
+                bit_float = ["f32le", "f32be", "f64le", "f64be"]
+                int_or_float = "int"
+                for i in bit_float:
+                        if i in bit_rate:
+                                int_or_float = "float" # bit floatなら対策不要
+                                break
+                
+                if int_or_float == "int":
+                        if float(PK) > 0:
+                                PK = "  0.0"
+                
+                PK = adjustSpace(PK) # スペース調整
 
 
 
