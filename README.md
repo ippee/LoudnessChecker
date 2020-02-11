@@ -10,13 +10,13 @@ DTMをやっていると、色んな曲のラウドネスを計測したくな�
 っていう手間が死ぬほど面倒だったので、スタンドアロンで動くアプリを作りました  
 このアプリが楽曲制作の手助けになれば幸いです  
 　  
-**LoudnessChecker.exe**（Ver. 1.4）  
+**LoudnessChecker.exe**（Ver. 1.4.2）  
 **https://drive.google.com/open?id=1yMVZuCFk6LEahGO7TRchBEN8EyZCmPeJ**  
 　  
 **FFmpeg**  
 **https://www.ffmpeg.org/**  
 　  
-**【windows】FFmpegをインストールする手順｜新卒エンジニアの開発日記**  
+**【windows】FFmpegをインストールする手順｜新卒エンジニアの開発日記**（参考）  
 **https://fukatsu.tech/windows-ffmpeg**  
 　  
 　  
@@ -90,6 +90,7 @@ http://www.ffmpeg.org/general.html#File-Formats
 　  
 　  
 ## 更新履歴
+- 2020/02/11: フォーマット判別のプログラムを修正（V1.4.2）
 - 2020/02/10: 対応フォーマット拡張、ファイルパス入力時のバグ対応、非bit float音源のピークが（なぜか）0dBFSを超えたときの対応を修正（V1.4）
 - 2020/02/10: TargetチェックボックスのT/Fにテキストボックスが反応、ログ編集アルゴリズムの見直し（V1.3）
 - 2020/02/09: Relative Scaleに対応、Resultの表示を調整（V1.2）

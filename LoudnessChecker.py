@@ -3,7 +3,6 @@
 import sys
 import re
 import os
-import pydub
 from time import sleep
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -12,7 +11,7 @@ import tkinter.messagebox as messagebox
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
-ver = "Ver. 1.4"
+ver = "Ver. 1.4.2"
 
 
 
@@ -57,12 +56,12 @@ def searchFile(keyword):
                         getfiles.append(name)
         return getfiles
 
-# .logの読み込み
-def readLog(logfile):
-        f = open(logfile, 'r', encoding='utf-8')
-        log = f.readlines()
+# ファイルの読み込み
+def readFile(fileName):
+        f = open(fileName, 'r', encoding='utf-8')
+        file = f.readlines()
         f.close()
-        return log
+        return file
 
 # 0.1秒後のファイルサイズが同じかどうかをチェック
 def checkSize(size, logfile):
@@ -220,14 +219,18 @@ class FiledialogSampleApp(ttk.Frame):
         # 音声処理
         def audioAnalyze(self):
                 path = self.filenameEntry.get()
-                path = path.replace('"', '') # pathに " が含まれていても一旦消す
+                path = deleteStr(path, '"', "'") # pathに " とか ' が含まれていても一旦消す
                 path = path.replace("\\", "/") # スラッシュを統一
                 audioName = path[path.rfind( "/" ) + 1 : len(path)] # ファイル名取得
+                ext = path[path.rfind(".")+1 : len(path)] # 拡張子取得
 
-                # 入力されたファイルがffmpegに対応しているかチェック（もっといい方法を考え中）
-                try:
-                        pydub.AudioSegment.from_file(path)
-                except (IndexError, pydub.exceptions.CouldntDecodeError):
+                # ffmpegが対応しているフォーマットのリストを取得
+                ext_list = readFile(resource_path("src/FFmpeg_FileExtention.txt"))
+                ext_list[0] = deleteStr(ext_list[0], "'")
+                ext_list[0] = ext_list[0].split(", ")
+
+                # 入力されたファイルがffmpegに対応しているかチェック
+                if ext not in ext_list[0]:
                         messagebox.showerror("ERROR", "This file or path is invalid!")
                         self.analyzeButton.config(state="active", text="Analyze")
                         return "break!"
@@ -256,7 +259,7 @@ class FiledialogSampleApp(ttk.Frame):
 
                 ### mLoud, sLoudを取得 ###
                 # ログの読み込み
-                log = readLog(logfiles[0])
+                log = readFile(logfiles[0])
 
                 processing = [] # ログの情報を編集するために使う
                 for i in log:
@@ -315,7 +318,7 @@ class FiledialogSampleApp(ttk.Frame):
 
 
                 ### 通常ピークの取得 ###
-                log = readLog(logfiles[1]) # 読み込むログを変更
+                log = readFile(logfiles[1]) # 読み込むログを変更
                 PK_index = max(searchIndex(log, "Sample peak:")) # "Sample peak:"って書かれた行を探す
                 PK = log[PK_index+1] # 通常ピークの行を取得
 
