@@ -2,19 +2,21 @@
 「**Loudness Checker**」とは、入力したオーディオやビデオのピークやラウドネス（アルゴリズム：EBU R128）を計測するプログラムおよびアプリケーションです  
 　  
 **本アプリの使用にはFFmpegのインストールが必須です**、各自でインストールをお願いいたします  
-（ググれば方法が出てきます、下にもwindowsのリンクを貼っています）  
 このアプリ関係なしにFFmpegは超有能なのでインストールしましょう  
+（インストール方法を１行で説明すれば、FFmpegダウンロードして解凍してどっかに保存して環境変数Path設定すれば完了）  
+（ググれば具体的な方法が出てきます、下にもwindowsのリンクを貼っています）  
 　  
 DTMをやっていると、色んな曲のラウドネスを計測したくなることが多々あります  
 ただ、その度にDAWを起動して、プロジェクト立ち上げて、楽曲を読み込んで……  
 っていう手間が死ぬほど面倒だったので、スタンドアロンで動くアプリを作りました  
 このアプリが楽曲制作の手助けになれば幸いです  
 　  
-**LoudnessChecker.exe**（Ver. 1.4.2）  
-**https://drive.google.com/open?id=1yMVZuCFk6LEahGO7TRchBEN8EyZCmPeJ**  
+**LoudnessChecker.exe**（Ver. 1.4.3, Copyright (c) 2020 Ippee）  
+**https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS**  
 　  
 **FFmpeg**  
-**https://www.ffmpeg.org/**  
+**https://www.ffmpeg.org/**（公式HP）  
+**https://ffmpeg.zeranoe.com/builds/**（FFmpegダウンロード）  
 　  
 **【windows】FFmpegをインストールする手順｜新卒エンジニアの開発日記**（参考）  
 **https://fukatsu.tech/windows-ffmpeg**  
@@ -59,8 +61,6 @@ http://www.ffmpeg.org/general.html#File-Formats
 ### バグったら？
 私が把握している範囲で起きたバグについて対処法を書きます
 - 何らかの理由でアプリの処理が止まったりフリーズしたら、とりあえず再起動してください
-- FFmpegのコンソールが消えたらすぐに結果が出力されますが、稀に出力されないまま **Running…** で止まっていることがあります  
-そういう時はアプリを再起動してもう一回分析してみてください
 - 分析中に出てくるコンソールの画面内をクリックすると処理が停止してバグります  
 処理中の画面は触らずに待ちましょう  
 
@@ -86,10 +86,13 @@ http://www.ffmpeg.org/general.html#File-Formats
 ## その他（補足など）
 - 作業環境
   - Windows 10
-  - Python 3.6.4
+  - FFmpeg (20190823-b29c7bc)
+  - Python 3.6.4 (Copyright (c) 2001 Python Software Foundation; All Rights Reserved)
+    - Matplotlib 2.2.2 (Copyright (c) 2012-2013 Matplotlib Development Team; All Rights Reserved)
 　  
 　  
 ## 更新履歴
+- 2020/02/12: 測定エラー時の対応を修正（V1.4.3）
 - 2020/02/11: フォーマット判別のプログラムを修正（V1.4.2）
 - 2020/02/10: 対応フォーマット拡張、ファイルパス入力時のバグ対応、非bit float音源のピークが（なぜか）0dBFSを超えたときの対応を修正（V1.4）
 - 2020/02/10: TargetチェックボックスのT/Fにテキストボックスが反応、ログ編集アルゴリズムの見直し（V1.3）

@@ -11,7 +11,7 @@ import tkinter.messagebox as messagebox
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
-ver = "Ver. 1.4.2"
+ver = "Ver. 1.4.3"
 
 
 
@@ -244,7 +244,7 @@ class FiledialogSampleApp(ttk.Frame):
 
                 for i in range(len(cmd)):
                         os.system(cmd[i]) # コマンドプロンプトを別で起動してコマンド実行
-                        sleep(1.1)
+                        sleep(1.1) # .logファイル上書き対策
 
                 # .logのファイル名を抽出
                 logfiles = searchFile(r"^ffmpeg-\d{8}-\d{6}.log$")
@@ -254,15 +254,20 @@ class FiledialogSampleApp(ttk.Frame):
                 while True:
                         if checkSize(size, logfiles[0]) == True: # 0.1秒後にファイルサイズが変わっているかをチェック
                                 if checkSize(size, logfiles[1]) == True:
-                                        break
+                                        log_0 = readFile(logfiles[0]) # ラウドネス関連のログ読み込み
+                                        log_1 = readFile(logfiles[1]) # サンプルピーク関連のログ読み込み
+                                        TF_0 = "AVIOContext" in log_0[len(log_0)-1] # 分析終わってたらTrue
+                                        TF_1 = "AVIOContext" in log_1[len(log_1)-1] # 分析終わってたらTrue
+                                        if TF_0 == True and TF_1 == True:
+                                                break
+                                        else:
+                                                messagebox.showerror("ERROR", "Measurement failed!\n\nPlease exit the ffmpeg.exe and restart this application.")
+                                                sys.exit() # エラったら強制終了
                         
 
                 ### mLoud, sLoudを取得 ###
-                # ログの読み込み
-                log = readFile(logfiles[0])
-
                 processing = [] # ログの情報を編集するために使う
-                for i in log:
+                for i in log_0:
                         if "TARGET:-23 LUFS" in i: # mLoudとsLoudの情報が載っている行だけ残す
                                 processing.append(i)
                 
@@ -301,8 +306,8 @@ class FiledialogSampleApp(ttk.Frame):
 
 
                 ### ラウドネス関連情報の取得 ###
-                summary_index = max(searchIndex(log, "Summary:")) # ログの中から"Summary:"って書かれた行を探す
-                summary = log[summary_index+2:summary_index+14] # 最後の出力結果のある行を取得
+                summary_index = max(searchIndex(log_0, "Summary:")) # ログの中から"Summary:"って書かれた行を探す
+                summary = log_0[summary_index+2:summary_index+14] # 最後の出力結果のある行を取得
 
                 # いらん行を指定して消す
                 n=0 # 消した行分リストが短くなるので、そのつじつま合わせ
@@ -318,17 +323,16 @@ class FiledialogSampleApp(ttk.Frame):
 
 
                 ### 通常ピークの取得 ###
-                log = readFile(logfiles[1]) # 読み込むログを変更
-                PK_index = max(searchIndex(log, "Sample peak:")) # "Sample peak:"って書かれた行を探す
-                PK = log[PK_index+1] # 通常ピークの行を取得
+                PK_index = max(searchIndex(log_1, "Sample peak:")) # "Sample peak:"って書かれた行を探す
+                PK = log_1[PK_index+1] # 通常ピークの行を取得
 
                 # いらん文字消す
                 PK = deleteStr(PK, " ", "\n", ":")
                 PK = deleteAlphabet(PK)
 
                 # 入力ファイルのビット深度を取得
-                bit_rate_index = min(searchIndex(log, "Audio: "))
-                bit_rate = log[bit_rate_index]
+                bit_rate_index = min(searchIndex(log_1, "Audio: "))
+                bit_rate = log_1[bit_rate_index]
 
                 # 通常ピークが（なぜか）0dBFSを越えたときの対策
                 bit_float = ["f32le", "f32be", "f64le", "f64be"]
