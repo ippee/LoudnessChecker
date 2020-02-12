@@ -12,14 +12,14 @@ DTMをやっていると、色んな曲のラウドネスを計測したくな�
 このアプリが楽曲制作の手助けになれば幸いです  
 　  
 **LoudnessChecker.exe**（Ver. 1.4.3, Copyright (c) 2020 Ippee）  
-**https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS**  
+https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS  
 　  
 **FFmpeg**  
-**https://www.ffmpeg.org/**（公式HP）  
-**https://ffmpeg.zeranoe.com/builds/**（FFmpegダウンロード）  
+https://www.ffmpeg.org/（公式HP）  
+https://ffmpeg.zeranoe.com/builds/（FFmpegダウンロード）  
 　  
 **【windows】FFmpegをインストールする手順｜新卒エンジニアの開発日記**（参考）  
-**https://fukatsu.tech/windows-ffmpeg**  
+https://fukatsu.tech/windows-ffmpeg  
 　  
 　  
 ![GUI](https://raw.githubusercontent.com/ippee/LoudnessChecker/master/Picture/GUI.jpg)
