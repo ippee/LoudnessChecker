@@ -11,15 +11,15 @@ DTMをやっていると、色んな曲のラウドネスを計測したくな�
 っていう手間が死ぬほど面倒だったので、スタンドアロンで動くアプリを作りました  
 このアプリが楽曲制作の手助けになれば幸いです  
 　  
-**LoudnessChecker.exe**（Ver. 1.4.3, Copyright (c) 2020 Ippee）  
-**https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS**  
+**LoudnessChecker.exe**（Ver. 1.4.3）  
+https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS  
 　  
 **FFmpeg**  
-**https://www.ffmpeg.org/**（公式HP）  
-**https://ffmpeg.zeranoe.com/builds/**（FFmpegダウンロード）  
+https://www.ffmpeg.org/ （公式HP）  
+https://ffmpeg.zeranoe.com/builds/ （FFmpegダウンロード）  
 　  
 **【windows】FFmpegをインストールする手順｜新卒エンジニアの開発日記**（参考）  
-**https://fukatsu.tech/windows-ffmpeg**  
+https://fukatsu.tech/windows-ffmpeg  
 　  
 　  
 ![GUI](https://raw.githubusercontent.com/ippee/LoudnessChecker/master/Picture/GUI.jpg)
@@ -84,11 +84,17 @@ http://www.ffmpeg.org/general.html#File-Formats
 　  
 　  
 ## その他（補足など）
-- 作業環境
+### アプリについて
+- **Loudness Checker Ver. 1.4.3**
+- Copyright (c) 2020 Ippee
+- このソースコード、およびアプリケーションはMIT Licenseのもとで公開されています。
+- 制作者: Ippee / いっぺー（Twitter: @ippee1410）
+- 動作環境: 
   - Windows 10
-  - FFmpeg (20190823-b29c7bc)
+  - FFmpeg
+- 使用言語 / ライブラリ:
   - Python 3.6.4 (Copyright (c) 2001 Python Software Foundation; All Rights Reserved)
-    - Matplotlib 2.2.2 (Copyright (c) 2012-2013 Matplotlib Development Team; All Rights Reserved)
+  - Matplotlib 2.2.2 (Copyright (c) 2012-2013 Matplotlib Development Team; All Rights Reserved)
 　  
 　  
 ## 更新履歴
