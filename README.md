@@ -67,7 +67,9 @@ https://ffmpeg.zeranoe.com/builds/
 **FFmpegがサポートしている全てのオーディオ/ビデオ形式に対応しました！**  
 - Audio: wav, flac, aifc, aiff, wma, mp3, ogg, ac3, m4a, etc.
 - Video: avi, wmv, flv, mp4, 3g2, 3gp, etc.
-参考: 2.1 File Formats - General Documentation | FFmpeg
+
+その他の対応形式については、以下のサイトをご確認ください  
+2.1 File Formats - General Documentation | FFmpeg  
 http://www.ffmpeg.org/general.html#File-Formats
 　  
 ### バグったら？
