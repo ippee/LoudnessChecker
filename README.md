@@ -11,7 +11,7 @@ DTMをやっていると、色んな曲のラウドネスを計測したくな�
 っていう手間が死ぬほど面倒だったので、スタンドアロンで動くアプリを作りました  
 このアプリが楽曲制作の手助けになれば幸いです  
 　  
-**LoudnessChecker.exe**（Ver. 1.4.3）  
+**LoudnessChecker.exe**（Ver. 1.5）  
 https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS  
 　  
 **FFmpeg**  
@@ -33,7 +33,7 @@ https://fukatsu.tech/windows-ffmpeg
 ソースコードを使うならPythonが必要です（3.6以外のバージョンで動くかは不明、Windows以外のOSで動くかも不明）  
 　  
 使い方は何も難しいことはなくて、
-1. **Loudness Checker.exe** を起動
+1. **Loudness Checker.exe** を起動（ちょっと時間かかる）
 2. **Browse…** からファイルを指定 or ファイルのパスをテキストボックスに入力
 3. **Target** を決める（不要ならチェックを外す）
 4. **Analyze** をクリックで解析開始、謎ウインドウが出てくるけど、しばし待たれよ
@@ -45,6 +45,7 @@ https://fukatsu.tech/windows-ffmpeg
 - **Sample Peak** \[dBFS]
 - **True Peak** \[dBTP]
 - **Integrated Loudness** (Absolute Scale) \[LUFS]
+- **Target** \[LUFS] (Target指定時のみ表示)
 - **Integrated Loudness** (Relative Scale) \[LU] (Target指定時のみ表示)
 - **Max. Momentary Loudness** \[LUFS]
 - **Max. Short-term Loudness** \[LUFS]
@@ -54,8 +55,11 @@ https://fukatsu.tech/windows-ffmpeg
   
 が、一括出力されます  
 　  
+### 対応ファイル
 **FFmpegがサポートしている全てのオーディオ/ビデオ形式に対応しました！**  
-2.1 File Formats - General Documentation | FFmpeg  
+- Audio: wav, flac, aifc, aiff, wma, mp3, ogg, ac3, m4a, etc.
+- Video: avi, wmv, flv, mp4, 3g2, 3gp, etc.
+参考: 2.1 File Formats - General Documentation | FFmpeg
 http://www.ffmpeg.org/general.html#File-Formats
 　  
 ### バグったら？
@@ -75,29 +79,24 @@ http://www.ffmpeg.org/general.html#File-Formats
 　  
 　  
 ## 注意事項
-1. Pythonで動いているので、基本的に挙動は遅いです  
-特に起動には時間がかかります、気長に待ってください  
-2. 例のごとく「動けばなんでもいいだろ精神」で作っているので、コードの見やすさとかほとんど考えていないです()  
-見にくかったらごめんなさい  
-見やすいコードを書けるようになったら改訂する<u>かも</u>しれません  
-3. <font color="red">**本アプリを使用していかなる損害が発生したとしても、私は一切の責任を負いかねますのでご了承ください**</font>  
+<font color="red">**本アプリを使用していかなる損害が発生したとしても、私は一切の責任を負いかねますのでご了承ください**</font>  
 　  
 　  
 ## その他（補足など）
 ### アプリについて
-- **Loudness Checker Ver. 1.4.3**
+- **Loudness Checker Ver. 1.5**
 - Copyright (c) 2020 Ippee
 - このソースコード、およびアプリケーションはMIT Licenseのもとで公開されています。
-- 制作者: Ippee / いっぺー（Twitter: @ippee1410）
 - 動作環境: 
   - Windows 10
   - FFmpeg
 - 使用言語 / ライブラリ:
-  - Python 3.6.4 (Copyright (c) 2001 Python Software Foundation; All Rights Reserved)
-  - Matplotlib 2.2.2 (Copyright (c) 2012-2013 Matplotlib Development Team; All Rights Reserved)
+  - Python 3.6.4
+  - Matplotlib 2.2.2
 　  
 　  
 ## 更新履歴
+- 2020/02/12: メニューバーの作成、ResultにTargetで指定した値を出力（V1.5）
 - 2020/02/12: 測定エラー時の対応を修正（V1.4.3）
 - 2020/02/11: フォーマット判別のプログラムを修正（V1.4.2）
 - 2020/02/10: 対応フォーマット拡張、ファイルパス入力時のバグ対応、非bit float音源のピークが（なぜか）0dBFSを超えたときの対応を修正（V1.4）
