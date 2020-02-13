@@ -1,25 +1,17 @@
 # Loudness Checker
-「**Loudness Checker**」とは、入力したオーディオやビデオのピークやラウドネス（アルゴリズム：EBU R128）を計測するプログラムおよびアプリケーションです  
+「**Loudness Checker**」とは、入力したオーディオやビデオのピークやラウドネス（アルゴリズム：EBU R128）を計測するWindows専用アプリケーションです  
 　  
-**本アプリの使用にはFFmpegのインストールが必須です**、各自でインストールをお願いいたします  
+**本アプリの使用にはFFmpeg (https://www.ffmpeg.org/) のインストールが必須です**  
 このアプリ関係なしにFFmpegは超有能なのでインストールしましょう  
-（インストール方法を１行で説明すれば、FFmpegダウンロードして解凍してどっかに保存して環境変数Path設定すれば完了）  
-（ググれば具体的な方法が出てきます、下にもwindowsのリンクを貼っています）  
+**（インストール方法を下記に記載）**  
 　  
 DTMをやっていると、色んな曲のラウドネスを計測したくなることが多々あります  
 ただ、その度にDAWを起動して、プロジェクト立ち上げて、楽曲を読み込んで……  
-っていう手間が死ぬほど面倒だったので、スタンドアロンで動くアプリを作りました  
+っていう手間が死ぬほど面倒だったので、DAWなし単体で動くアプリを作りました  
 このアプリが楽曲制作の手助けになれば幸いです  
 　  
-**LoudnessChecker.exe**（Ver. 1.5）  
+**LoudnessChecker.zip**（Ver. 1.5.2）  
 https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS  
-　  
-**FFmpeg**  
-https://www.ffmpeg.org/ （公式HP）  
-https://ffmpeg.zeranoe.com/builds/ （FFmpegダウンロード）  
-　  
-**【windows】FFmpegをインストールする手順｜新卒エンジニアの開発日記**（参考）  
-https://fukatsu.tech/windows-ffmpeg  
 　  
 　  
 ![GUI](https://raw.githubusercontent.com/ippee/LoudnessChecker/master/Picture/GUI.jpg)
@@ -28,11 +20,26 @@ https://fukatsu.tech/windows-ffmpeg
 
 　  
 　  
-## 使い方
-アプリ単体で使う場合は.exeファイルだけあれば大丈夫です（アプリはWindows専用です）  
-ソースコードを使うならPythonが必要です（3.6以外のバージョンで動くかは不明、Windows以外のOSで動くかも不明）  
+## FFmpegについて
+**FFmpeg**とは、the FFmpeg developersが開発したフリーのクロスプラットフォーム・マルチメディアフレームワークであり、動画や音声の再生・記録・デコード・エンコード等の処理が行えます。  
 　  
-使い方は何も難しいことはなくて、
+下記URLより、使用しているPCに適したファイルをダウンロードし、以下の手順でインストールしてください。  
+　  
+**Builds - Zeranoe FFmpeg**  
+https://ffmpeg.zeranoe.com/builds/  
+　  
+### インストール手順
+1. ダウンロードしたファイルを解凍し、任意の場所に保存  
+（"C:\Program Files" または "C:\Program Files (x86)" をおすすめします）
+2. "Windowsキー+Pause/Break" 等からコントロールパネルのシステムを起動
+3. 左のリストからシステムの詳細設定をクリックし、詳細設定→環境変数を開く
+4. ユーザー環境変数からPathを選択し、編集をクリック
+5. 新規→参照と順にクリックするとダイアログが現れ、  
+保存したFFmpegのファイルの中から "bin" フォルダを選択し、OKをクリック（インストール完了）
+　  
+　  
+## 使い方
+難しいことは何もなくて、
 1. **Loudness Checker.exe** を起動（ちょっと時間かかる）
 2. **Browse…** からファイルを指定 or ファイルのパスをテキストボックスに入力
 3. **Target** を決める（不要ならチェックを外す）
@@ -55,6 +62,8 @@ https://fukatsu.tech/windows-ffmpeg
   
 が、一括出力されます  
 　  
+もうちょっと詳しい使い方については、srcファイルより**Help.html**をご覧ください  
+　  
 ### 対応ファイル
 **FFmpegがサポートしている全てのオーディオ/ビデオ形式に対応しました！**  
 - Audio: wav, flac, aifc, aiff, wma, mp3, ogg, ac3, m4a, etc.
@@ -65,8 +74,9 @@ http://www.ffmpeg.org/general.html#File-Formats
 ### バグったら？
 私が把握している範囲で起きたバグについて対処法を書きます
 - 何らかの理由でアプリの処理が止まったりフリーズしたら、とりあえず再起動してください
-- 分析中に出てくるコンソールの画面内をクリックすると処理が停止してバグります  
+- 分析中に出てくるコンソールの画面内をクリックすると処理が停止してエラーを吐きます  
 処理中の画面は触らずに待ちましょう  
+気になる人は、ffmpeg.exeの簡易編集モードをオフにしてください
 
 他に謎現象が起きたら連絡ください（Twitter: @ippee1410）  
 　  
@@ -84,9 +94,9 @@ http://www.ffmpeg.org/general.html#File-Formats
 　  
 ## その他（補足など）
 ### アプリについて
-- **Loudness Checker Ver. 1.5**
+- **Loudness Checker Ver. 1.5.2**
 - Copyright (c) 2020 Ippee
-- このソースコード、およびアプリケーションはMIT Licenseのもとで公開されています。
+- このソースコード、およびアプリケーションはMIT Licenseのもとで公開されています
 - 動作環境: 
   - Windows 10
   - FFmpeg
@@ -96,6 +106,7 @@ http://www.ffmpeg.org/general.html#File-Formats
 　  
 　  
 ## 更新履歴
+- 2020/02/13: ヘルプの追加
 - 2020/02/12: メニューバーの作成、ResultにTargetで指定した値を出力（V1.5）
 - 2020/02/12: 測定エラー時の対応を修正（V1.4.3）
 - 2020/02/11: フォーマット判別のプログラムを修正（V1.4.2）
@@ -115,7 +126,10 @@ http://www.ffmpeg.org/general.html#File-Formats
   - FFmpegでラウドネスを測れるって初めて知ったサイト
 - **LUFS/LKFS…ラウドネスメーターについて復習して理解を深めよう | SOUNDEVOTEE.NET**
   - https://soundevotee.net/blog/2017/04/25/learning_about_loudness_meter/
-  - ラウドネスの勉強に用いたサイト
+  - ラウドネスの勉強に用いたサイトその１
+- **EBU ラウドネス標準 R-128 | Steinberg.help**  
+  - https://steinberg.help/wavelab_pro/v9.5/ja/wavelab/topics/wavelab_concepts/ebu_loudness_recommendation_r128__c.html
+  - ラウドネスの勉強に用いたサイトその２
 - **【Python GUIサンプル】Tkinterでfiledialog(ファイルダイアログ)を使ってみる | エンジニアになりたいブログ**
   - https://suzutaka-programming.com/tkinter-filedialog/
   - このサイトが無かったらGUIは作れなかった

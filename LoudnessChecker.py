@@ -4,6 +4,7 @@ import sys
 import re
 import os
 from time import sleep
+import webbrowser
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.filedialog as filedialog
@@ -11,7 +12,7 @@ import tkinter.messagebox as messagebox
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
-ver = "Ver. 1.5"
+ver = "Ver. 1.5.2"
 
 
 # matplotlibのフォント設定（参考: https://qiita.com/yniji/items/3fac25c2ffa316990d0c）
@@ -137,8 +138,8 @@ class FiledialogSampleApp(ttk.Frame):
                 menubar = tk.Menu(self)
                 
                 menu = tk.Menu(menubar, tearoff=0)
+                menu.add_command(label="Help", command=self.showHelp)
                 menu.add_command(label="Preferences", state="disable", command=self.showPref) # 後に追加
-                menu.add_command(label="Help", state="disable", command=self.showHelp) # 後に追加
                 menu.add_separator()
                 menu.add_command(label="About Loudness Checker", command=self.showNewWindow)
                 menubar.add_cascade(label="Menu", menu=menu)
@@ -198,9 +199,9 @@ class FiledialogSampleApp(ttk.Frame):
                 closeButton = ttk.Button(aboutWindow, text="Close", command=aboutWindow.destroy)
                 closeButton.pack(side="top")
         
-        # ヘルプを開く（後にHTMLで制作予定）
+        # ヘルプを開く
         def showHelp(self):
-                print("Help")
+                webbrowser.open(resource_path("src/Help.html"))
         
         # 設定を開く（後に制作予定）
         def showPref(self):
@@ -224,13 +225,13 @@ class FiledialogSampleApp(ttk.Frame):
         # アナライズボタンクリック時
         def startAnalyze(self):
                 if self.filename.get() == "":
-                        messagebox.showerror("ERROR", "Please enter a valid path!")
+                        messagebox.showerror("ERROR", "Enter a valid path!")
                         return "break"
                 
                 if self.bln.get() == True:
                         target = self.targetEntry.get()
                         if is_float(target) == False:
-                                messagebox.showerror("ERROR", "Please set a valid target!")
+                                messagebox.showerror("ERROR", "Set a valid target!")
                                 return "break"
                         target = float(target)
 
@@ -320,7 +321,7 @@ class FiledialogSampleApp(ttk.Frame):
                                         if TF_0 == True and TF_1 == True:
                                                 break
                                         else:
-                                                messagebox.showerror("ERROR", "Measurement failed!\n\nPlease exit the ffmpeg.exe and restart this application.")
+                                                messagebox.showerror("ERROR", "Measurement failed!\n\nExit the ffmpeg.exe and restart this application.")
                                                 sys.exit() # エラったら強制終了
                         
 

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How To Use Loudness Checker</title>
+    <link rel="shortcut icon" href="icon.ico">
+    <link rel="stylesheet" type="text/css" href="src_html\default.css">
+</head>
+<body>
+    <h1><center>How To Use Loudness Checker Ver. 1.5.2</center></h1>
+    <h2>What is Loudness Checker?</h2>
+    <br>
+    <img src="icon.ico" title="icon">
+    <p><b>"Loudness checker"</b> とは、入力したオーディオやビデオのピークやラウドネス（アルゴリズム：EBU R128）を測定するWiodows専用アプリケーションです。</p>
+    <p>本アプリは、プログラミング言語 <b>Python 3.6.4</b>、およびそのグラフ描写ライブラリである <b>Matplotlib 2.2.2</b> を用いて制作されています。</p>
+    <br>
+    <p>本アプリはラウドネスの測定に <b><a href="https://www.ffmpeg.org/" target="_blank">FFmpeg</a></b> を必要とします。</p>
+    <p>FFmpegとは、the FFmpeg developersが開発したフリーのクロスプラットフォーム・マルチメディアフレームワークであり、動画や音声の再生・記録・デコード・エンコード等の処理が行えます。</p>
+    <p>下記URLより、使用しているPCに適したファイルをダウンロードし、以下の手順でインストールしてください。</p>
+    <b><a href="https://ffmpeg.zeranoe.com/builds/" target="_blank">Builds - Zeranoe FFmpeg</a></b>
+    <p>・インストール手順</p>
+    <ol>
+        <li>ダウンロードしたファイルを解凍し、任意の場所に保存（"C:\Program Files" または "C:\Program Files (x86)" を推奨）</li>
+        <li>"Windowsキー+Pause/Break" 等からコントロールパネルのシステムを起動</li>
+        <li>左のリストからシステムの詳細設定をクリックし、詳細設定→環境変数を開く</li>
+        <li>ユーザー環境変数からPathを選択し、編集をクリック</li>
+        <li>新規→参照と順にクリックするとダイアログが現れ、保存したFFmpegのファイルの中から "bin" フォルダを選択し、OKをクリック（インストール完了）</li>
+    </ol>
+    <p>　</p>
+
+    <h2>使い方</h2>
+    <br>
+    <img src="src_html\GUI.jpg" title="GUI">
+    <p>　</p>
+    <h3>1. Audio / Video file path</h3>
+    <p>測定したい音声・映像ファイルのパスを入力します。</p>
+    <p><b>"Browse…"</b> ボタンから測定したいファイルを選択するか、直接パスを入力してください。</p>
+    <br>
+    <h4>対応するファイル形式</h4>
+    <p>本アプリは、<b>FFmpegがサポートしている全ての音声/映像形式に対応</b>しています。</p>
+    <dl>
+        <dt>- Audio:</dt>
+        <dd>wav, flac, aifc, aiff, wma, mp3, ogg, ac3, m4a, etc.</dd>
+        <dt>- Video:</dt>
+        <dd>avi, wmv, flv, mp4, 3g2, 3gp, etc.</dd>
+    </dl>
+    <p>その他の対応形式については、以下のサイトをご確認ください。</p>
+    <a href="http://www.ffmpeg.org/general.html#File-Formats">2.1 File Formats - General Documentation | FFmpeg</a>
+    <p>　</p>
+
+    <h3>2. Target</h3>
+    <p><b>"Target"</b> に入力された値をもとに、ラウドネスの相対値を算出します。</p>
+    <p>数値は整数、または少数で入力してください。</p>
+    <p>また、<b>"Set a target of rerative loudness."</b> のチェックを外すと、相対値は出力されません。</p>
+    <br>
+
+    <h3>3. Analyze</h3>
+    <p><b>"Analyze"</b> ボタンをクリックすると ffmpeg.exe が立ち上がり、指定されたファイルの測定を開始します。</p>
+    <p>測定時に発生するエラーには、以下のようなものがあります。</p>
+    <dl>
+        <dt><b>- <font color="red">"Enter a valid path!"</font></b></dt>
+        <dd>パス欄が空白であるときに出力されます。</dd>
+        <br>
+        <dt><b>- <font color="red">"Set a valid target!"</font></b></dt>
+        <dd>ターゲット欄が空白であったり、無効な値が入力されているときに出力されます。</dd>
+        <br>
+        <dt><b>- <font color="red">"This file or path is invalid!"</font></b></dt>
+        <dd>本アプリが対応していないファイル形式や、無効なパスが入力されているときに出力されます。</dd>
+        <br>
+        <dt><b>- <font color="red">"Measurement failed! Exit the ffmpeg.exe and restart this application."</font></b></dt>
+        <dd>何らかの理由で分析が中断されたときに出力されます。</dd>
+        <dd>例えば、分析の最中にffmpeg.exe のコンソール画面をクリックすると分析が一時停止され、最後まで分析されずにエラーが出力される、といったことがあります。</dd>
+        <dd>上記の対処法として、ffmpeg.exe のタイトルバーを右クリックし、プロパティから編集オプションの <b>"簡易編集モード"</b> のチェックを外して OK をクリックしてください。</dd>
+        <dd>こうすることで、分析中にコンソール画面をクリックしても分析が一時停止しなくなります。</dd>
+    </dl>
+    <br>
+
+    <h3>4. Result</h3>
+    <p>測定が終了すると、ラウドネスの推移を示したグラフと、<b>"Result"</b> に測定結果が表示されます。</p>
+    <br>
+    <h4>・測定結果の内容</h4>
+    <dl>
+        <dt><b>- Sample Peak</b> [dBFS]</dt>
+        <dd>デジタル信号のピーク</dd>
+        <br>
+        <dt><b>- True Peak</b> [dBTP]</dt>
+        <dd>別名: Inter-sample Peak</dd>
+        <dd>デジタル信号をアナログ信号に変換した際に検出されるピーク</dd>
+        <br>
+        <dt><b>- Integrated Loudness</b> (Absolute/Relative Scale) [LUFS, LU]</dt>
+        <dd>音声全体のラウドネス値</dd>
+        <dd>（相対値の場合は、絶対値の Integrated Loudness [LUFS] と Target [LUFS] の比を単位 LU で表示します）</dd>
+        <br>
+        <dt><b>- Max. Momentary Loudness</b> [LUFS]</dt>
+        <dd>400ms単位で100msごとに取得されたラウドネスの最大値</dd>
+        <br>
+        <dt><b>- Max. Short-term Loudness</b> [LUFS]</dt>
+        <dd>3s単位で1sごとに取得されたラウドネスの最大値</dd>
+        <br>
+        <dt><b>- Loudness Range</b> [LU]</dt>
+        <dd>音声中の上位5%を除くラウドネスが最も高い部分（High）と、上位10%を除くラウドネスが最も低い部分（Low、無音部分を除く）との比</dd>
+    </dl>
+    <br>
+    <h4>・グラフについて</h4>
+    <br>
+    <img src="src_html\Plot.jpg" title="Plot">
+    <p>縦軸がラウドネス[LUFS]、横軸が時間[s]を表しています。</p>
+    <p>グラフの色分けは以下の通りです。</p>
+    <p><b>- 黒点線: Target</b></p>
+    <p><b>- <font color="red">赤線: Integrated Loudness</font></b></p>
+    <p><b>- <font color="#0080FF">青線: Mementary Loudness</font></b></p>
+    <p><b>- <font color="yellow">黄色: Short-term Loudness</font></b></p>
+    <br>
+    <p>左下に配置されているボタンは以下の機能があります（右順）。</p>
+    <dl>
+        <dt><b>- フロッピーボタン</b></dt>
+        <dd>出力されたグラフを保存することができます。</dd>
+        <dt><b>- 設定ボタン</b></dt>
+        <dd>グラフの表示に関する設定を行えます。</dd>
+        <dt><b>- 虫眼鏡ボタン</b></dt>
+        <dd>グラフの拡大/縮小が行えます。</dd>
+        <dt><b>- 十字矢印ボタン</b></dt>
+        <dd>グラフの移動ができます。右クリックをドラッグすることで拡大/縮小もできます。</dd>
+        <dt><b>- 左右矢印ボタン</b></dt>
+        <dd>グラフの表示変更について、元に戻る/やり直しが行えます。</dd>
+        <dt><b>- ホームボタン</b></dt>
+        <dd>はじめに出力されたグラフの表示に戻ります。</dd>
+    </dl>
+    <br>
+</body>
+<small><center>Copyright (c) 2020 Ippee</center></small>
+</html>
