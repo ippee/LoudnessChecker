@@ -1,5 +1,5 @@
 # Loudness Checker
-「**Loudness Checker**」とは、入力したオーディオやビデオのピークやラウドネス（アルゴリズム：EBU R128）を計測するWindows専用アプリケーションです  
+「**Loudness Checker**」とは、入力された音声/映像のピークやラウドネス（アルゴリズム：EBU R128）を計測するWindows専用アプリケーションです  
 　  
 **本アプリの使用にはFFmpeg (https://www.ffmpeg.org/) のインストールが必須です**  
 このアプリ関係なしにFFmpegは超有能なのでインストールしましょう  
@@ -10,7 +10,7 @@ DTMをやっていると、色んな曲のラウドネスを計測したくな�
 っていう手間が死ぬほど面倒だったので、DAWなし単体で動くアプリを作りました  
 このアプリが楽曲制作の手助けになれば幸いです  
 　  
-**LoudnessChecker.zip**（Ver. 1.5.2）  
+**LoudnessChecker.zip**（Ver. 2.0.1）  
 https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS  
 　  
 　  
@@ -21,9 +21,9 @@ https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS
 　  
 　  
 ## FFmpegについて
-**FFmpeg**とは、the FFmpeg developersが開発したフリーのクロスプラットフォーム・マルチメディアフレームワークであり、動画や音声の再生・記録・デコード・エンコード等の処理が行えます。  
+**FFmpeg**とは、the FFmpeg developersが開発したフリーのクロスプラットフォーム・マルチメディアフレームワークであり、動画や音声の再生・記録・デコード・エンコード等の処理が行えます  
 　  
-下記URLより、使用しているPCに適したファイルをダウンロードし、以下の手順でインストールしてください。  
+下記URLより、使用しているPCに適したファイルをダウンロードし、以下の手順でインストールしてください  
 　  
 **Builds - Zeranoe FFmpeg**  
 https://ffmpeg.zeranoe.com/builds/  
@@ -42,7 +42,7 @@ https://ffmpeg.zeranoe.com/builds/
 難しいことは何もなくて、
 1. **Loudness Checker.exe** を起動（ちょっと時間かかる）
 2. **Browse…** からファイルを指定 or ファイルのパスをテキストボックスに入力
-3. **Target** を決める（不要ならチェックを外す）
+3. **Target** を決める（不要なら空欄にする）
 4. **Analyze** をクリックで解析開始、謎ウインドウが出てくるけど、しばし待たれよ
 5. **Result** に結果（グラフ付き）が出力される
   
@@ -51,11 +51,10 @@ https://ffmpeg.zeranoe.com/builds/
 アプリにファイルを入力すると、
 - **Sample Peak** \[dBFS]
 - **True Peak** \[dBTP]
-- **Integrated Loudness** (Absolute Scale) \[LUFS]
-- **Target** \[LUFS] (Target指定時のみ表示)
-- **Integrated Loudness** (Relative Scale) \[LU] (Target指定時のみ表示)
-- **Max. Momentary Loudness** \[LUFS]
-- **Max. Short-term Loudness** \[LUFS]
+- **Target** \[LUFS] (Target指定時のみ、Relative Scaleの結果も表示する)
+- **Integrated Loudness** (Absolute/Relative Scale) \[LUFS, LU]
+- **Max. Momentary Loudness** (Absolute/Relative Scale) \[LUFS, LU]
+- **Max. Short-term Loudness** (Absolute/Relative Scale) \[LUFS, LU]
 - **Loudness Range** \[LU]
   - **High** \[LUFS]
   - **Low** \[LUFS]
@@ -94,9 +93,9 @@ http://www.ffmpeg.org/general.html#File-Formats
 　  
 ## その他（補足など）
 ### アプリについて
-- **Loudness Checker Ver. 1.5.2**
+- **Loudness Checker Ver. 2.0.1**
 - Copyright (c) 2020 Ippee
-- このソースコード、およびアプリケーションはMIT Licenseのもとで公開されています
+- このアプリケーションはMIT Licenseのもとで公開されています
 - 動作環境: 
   - Windows 10
   - FFmpeg
@@ -106,7 +105,8 @@ http://www.ffmpeg.org/general.html#File-Formats
 　  
 　  
 ## 更新履歴
-- 2020/02/13: ヘルプの追加
+- 2020/02/13: GUIを大幅に変更、Preferencesの追加、チェックボックスの廃止、測定結果の表示形式を変更（V2.0.1）
+- 2020/02/13: ヘルプの追加（V1.5.2）
 - 2020/02/12: メニューバーの作成、ResultにTargetで指定した値を出力（V1.5）
 - 2020/02/12: 測定エラー時の対応を修正（V1.4.3）
 - 2020/02/11: フォーマット判別のプログラムを修正（V1.4.2）

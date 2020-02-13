@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>How To Use Loudness Checker</title>
+    <title>How To Use Loudness Checker Ver. 2.0.1</title>
     <link rel="shortcut icon" href="icon.ico">
     <link rel="stylesheet" type="text/css" href="src_html\default.css">
 </head>
 <body>
-    <h1><center>How To Use Loudness Checker Ver. 1.5.2</center></h1>
+    <h1><center>How To Use Loudness Checker Ver. 2.0.1</center></h1>
     <h2>What is Loudness Checker?</h2>
     <br>
     <img src="icon.ico" title="icon">
-    <p><b>"Loudness checker"</b> とは、入力したオーディオやビデオのピークやラウドネス（アルゴリズム：EBU R128）を測定するWiodows専用アプリケーションです。</p>
-    <p>本アプリは、プログラミング言語 <b>Python 3.6.4</b>、およびそのグラフ描写ライブラリである <b>Matplotlib 2.2.2</b> を用いて制作されています。</p>
+    <p><b>"Loudness checker"</b> とは、入力された音声/映像のピークやラウドネス（アルゴリズム：EBU R128）を測定するWiodows専用アプリケーションです。</p>
+    <p>本アプリは、プログラミング言語 <b>Python 3.6.4</b>、およびそのグラフ描写ライブラリである <b>Matplotlib 2.2.2</b> によって制作されています。</p>
     <br>
     <p>本アプリはラウドネスの測定に <b><a href="https://www.ffmpeg.org/" target="_blank">FFmpeg</a></b> を必要とします。</p>
     <p>FFmpegとは、the FFmpeg developersが開発したフリーのクロスプラットフォーム・マルチメディアフレームワークであり、動画や音声の再生・記録・デコード・エンコード等の処理が行えます。</p>
@@ -50,9 +50,10 @@
     <p>　</p>
 
     <h3>2. Target</h3>
-    <p><b>"Target"</b> に入力された値をもとに、ラウドネスの相対値を算出します。</p>
+    <p>目標とするラウドネスを <b>"Target"</b> に入力します（単位: LUFS）。</p>
+    <p>ここに入力された数値は、ラウドネスの相対値の算出やグラフの出力に用いられます。</p>
     <p>数値は整数、または少数で入力してください。</p>
-    <p>また、<b>"Set a target of rerative loudness."</b> のチェックを外すと、相対値は出力されません。</p>
+    <p>この欄を空白にすることでターゲットを無効化することができ、その際 Relative Scale の結果は表示されなくなります。</p>
     <br>
 
     <h3>3. Analyze</h3>
@@ -63,43 +64,50 @@
         <dd>パス欄が空白であるときに出力されます。</dd>
         <br>
         <dt><b>- <font color="red">"Set a valid target!"</font></b></dt>
-        <dd>ターゲット欄が空白であったり、無効な値が入力されているときに出力されます。</dd>
+        <dd>ターゲット欄に無効な値が入力されているときに出力されます。</dd>
         <br>
         <dt><b>- <font color="red">"This file or path is invalid!"</font></b></dt>
         <dd>本アプリが対応していないファイル形式や、無効なパスが入力されているときに出力されます。</dd>
         <br>
-        <dt><b>- <font color="red">"Measurement failed! Exit the ffmpeg.exe and restart this application."</font></b></dt>
+        <dt><b>- <font color="red">"Analysis failed!\n\nExit the ffmpeg.exe and restart this application."</font></b></dt>
         <dd>何らかの理由で分析が中断されたときに出力されます。</dd>
-        <dd>例えば、分析の最中にffmpeg.exe のコンソール画面をクリックすると分析が一時停止され、最後まで分析されずにエラーが出力される、といったことがあります。</dd>
+        <dd>例えば、測定中に ffmpeg.exe のコンソール画面がクリックされ、分析が一時停止したためにエラーが出力される、といったことがあります。</dd>
         <dd>上記の対処法として、ffmpeg.exe のタイトルバーを右クリックし、プロパティから編集オプションの <b>"簡易編集モード"</b> のチェックを外して OK をクリックしてください。</dd>
         <dd>こうすることで、分析中にコンソール画面をクリックしても分析が一時停止しなくなります。</dd>
     </dl>
     <br>
 
     <h3>4. Result</h3>
-    <p>測定が終了すると、ラウドネスの推移を示したグラフと、<b>"Result"</b> に測定結果が表示されます。</p>
+    <p>測定が終了すると、ラウドネスの推移を示したグラフと、測定結果が <b>"Result"</b> に表示されます。</p>
     <br>
     <h4>・測定結果の内容</h4>
     <dl>
         <dt><b>- Sample Peak</b> [dBFS]</dt>
-        <dd>デジタル信号のピーク</dd>
+        <dd>デジタル信号のピーク。</dd>
         <br>
         <dt><b>- True Peak</b> [dBTP]</dt>
         <dd>別名: Inter-sample Peak</dd>
-        <dd>デジタル信号をアナログ信号に変換した際に検出されるピーク</dd>
+        <dd>デジタル信号をアナログ信号に変換した際に検出されるピーク。</dd>
+        <br>
+        <dt><b>- Target</b> [LUFS]</dt>
+        <dd>目標とするラウドネスの数値。</dd>
+        <dd> Target指定時に、Relative Scale の結果も表示します。</dd>
         <br>
         <dt><b>- Integrated Loudness</b> (Absolute/Relative Scale) [LUFS, LU]</dt>
-        <dd>音声全体のラウドネス値</dd>
-        <dd>（相対値の場合は、絶対値の Integrated Loudness [LUFS] と Target [LUFS] の比を単位 LU で表示します）</dd>
+        <dd>音声全体のラウドネス値。</dd>
+        <dd>相対値の場合は、絶対値の Integrated Loudness [LUFS] と Target [LUFS] の比を、単位 LU で表示します。</dd>
+        <dd>計算式: Target[LUFS] - I (abs.)[LUFS] = I (rel.)[LU]</dd>
         <br>
-        <dt><b>- Max. Momentary Loudness</b> [LUFS]</dt>
-        <dd>400ms単位で100msごとに取得されたラウドネスの最大値</dd>
+        <dt><b>- Max. Momentary Loudness</b> (Absolute/Relative Scale) [LUFS, LU]</dt>
+        <dd>400ms単位で100msごとに取得されたラウドネスの最大値。</dd>
+        <dd>相対値の場合は、絶対値の Max. Momentary Loudness [LUFS] と Target [LUFS] の比を、単位 LU で表示します。</dd>
         <br>
-        <dt><b>- Max. Short-term Loudness</b> [LUFS]</dt>
-        <dd>3s単位で1sごとに取得されたラウドネスの最大値</dd>
+        <dt><b>- Max. Short-term Loudness</b> (Absolute/Relative Scale) [LUFS, LU]</dt>
+        <dd>3s単位で1sごとに取得されたラウドネスの最大値。</dd>
+        <dd>相対値の場合は、絶対値の Max. Max. Short-term Loudness [LUFS] と Target [LUFS] の比を、単位 LU で表示します。</dd>
         <br>
         <dt><b>- Loudness Range</b> [LU]</dt>
-        <dd>音声中の上位5%を除くラウドネスが最も高い部分（High）と、上位10%を除くラウドネスが最も低い部分（Low、無音部分を除く）との比</dd>
+        <dd>音声中の上位5%を除くラウドネスが最も高い部分（High）と、下位10%を除くラウドネスが最も低い部分（Low、無音部分を除く）との比。</dd>
     </dl>
     <br>
     <h4>・グラフについて</h4>
@@ -112,7 +120,7 @@
     <p><b>- <font color="#0080FF">青線: Mementary Loudness</font></b></p>
     <p><b>- <font color="yellow">黄色: Short-term Loudness</font></b></p>
     <br>
-    <p>左下に配置されているボタンは以下の機能があります（右順）。</p>
+    <p>左下に配置されているボタンには以下の機能があります（右順）。</p>
     <dl>
         <dt><b>- フロッピーボタン</b></dt>
         <dd>出力されたグラフを保存することができます。</dd>
