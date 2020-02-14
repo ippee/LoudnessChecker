@@ -13,6 +13,10 @@ DTMをやっていると、色んな曲のラウドネスを計測したくな�
 **Download: LoudnessChecker.zip**（Ver. 2.0.3）  
 https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS  
 　  
+セキュリティによってダウンロードがブロックされる可能性がありますが、  
+それはこのアプリにコード署名とかコードサイニング証明書がないから（らしい）ので、  
+アプリ起動したらPCが爆発するとか、そういうことはないのでご安心ください  
+　  
 　  
 ![GUI](https://raw.githubusercontent.com/ippee/LoudnessChecker/master/Picture/GUI.jpg)
 
