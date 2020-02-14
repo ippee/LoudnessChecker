@@ -27,7 +27,7 @@ import tkinter.messagebox as messagebox
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
-ver = "Ver. 2.0.2"
+ver = "Ver. 2.0.3"
 
 
 # matplotlibのフォント設定
@@ -115,6 +115,16 @@ class LoudnessCheckerGUI(ttk.Frame):
                 self.pack()
 
                 # Preferences用変数を定義
+                try:
+                        readFile("setting.ini") # setting.iniがあるかチェック
+                except:
+                        messagebox.showwarning("WARNING", '"setting.ini" is missing!\nInitialize all settings.')
+                        factory_settings = ['[Target_value] ;Enter a float or "N/A"(strings)', 'N/A']
+                        f = open("setting.ini", 'w', encoding='utf-8')
+                        f.write(str(factory_settings[0]) + "\n")
+                        f.write(str(factory_settings[1]))
+                        f.close()
+                
                 self.setting = readFile("setting.ini") # setting.ini読み込み、targetの初期値が入ってる
                 if self.setting[1] == "N/A":
                         self.setting[1] = ""
