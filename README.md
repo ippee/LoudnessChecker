@@ -10,7 +10,7 @@ DTMをやっていると、色んな曲のラウドネスを計測したくな�
 っていう手間が死ぬほど面倒だったので、DAWなし単体で動くアプリを作りました  
 このアプリが楽曲制作の手助けになれば幸いです  
 　  
-**LoudnessChecker.zip**（Ver. 2.0.1）  
+**LoudnessChecker.zip**（Ver. 2.0.2）  
 https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS  
 　  
 　  
@@ -95,7 +95,7 @@ http://www.ffmpeg.org/general.html#File-Formats
 　  
 ## その他（補足など）
 ### アプリについて
-- **Loudness Checker Ver. 2.0.1**
+- **Loudness Checker Ver. 2.0.2**
 - Copyright (c) 2020 Ippee
 - このアプリケーションはMIT Licenseのもとで公開されています
 - 動作環境: 
@@ -103,19 +103,14 @@ http://www.ffmpeg.org/general.html#File-Formats
   - FFmpeg
 - 使用言語 / ライブラリ:
   - Python 3.6.4
-  - Matplotlib 2.2.2
+  - Matplotlib 3.1.3
 　  
 　  
 ## 更新履歴
+- 2020/02/13: matplotlib 3.1.3に対応、メイン画面/Preferencesの表示アルゴリズム変更、GUIの調整（V2.0.2）
 - 2020/02/13: GUIを大幅に変更、Preferencesの追加、チェックボックスの廃止、測定結果の表示形式を変更（V2.0.1）
 - 2020/02/13: ヘルプの追加（V1.5.2）
-- 2020/02/12: メニューバーの作成、ResultにTargetで指定した値を出力（V1.5）
-- 2020/02/12: 測定エラー時の対応を修正（V1.4.3）
-- 2020/02/11: フォーマット判別のプログラムを修正（V1.4.2）
-- 2020/02/10: 対応フォーマット拡張、ファイルパス入力時のバグ対応、非bit float音源のピークが（なぜか）0dBFSを超えたときの対応を修正（V1.4）
-- 2020/02/10: TargetチェックボックスのT/Fにテキストボックスが反応、ログ編集アルゴリズムの見直し（V1.3）
-- 2020/02/09: Relative Scaleに対応、Resultの表示を調整（V1.2）
-- 2020/02/08: グラフ出力機能の追加（V1.1）
+- …
 - 2020/02/07: 本アプリ公開（V1.0）
 　  
 　  

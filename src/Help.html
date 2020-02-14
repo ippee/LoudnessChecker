@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>How To Use Loudness Checker Ver. 2.0.1</title>
+    <title>How To Use Loudness Checker Ver. 2.0.2</title>
     <link rel="shortcut icon" href="icon.ico">
     <link rel="stylesheet" type="text/css" href="src_html\default.css">
 </head>
 <body>
-    <h1><center>How To Use Loudness Checker Ver. 2.0.1</center></h1>
+    <h1><center>How To Use Loudness Checker Ver. 2.0.2</center></h1>
     <h2>What is Loudness Checker?</h2>
     <br>
     <img src="icon.ico" title="icon">
     <p><b>"Loudness checker"</b> とは、入力された音声/映像のピークやラウドネス（アルゴリズム：EBU R128）を測定するWiodows専用アプリケーションです。</p>
-    <p>本アプリは、プログラミング言語 <b>Python 3.6.4</b>、およびそのグラフ描写ライブラリである <b>Matplotlib 2.2.2</b> によって制作されています。</p>
     <br>
     <p>本アプリはラウドネスの測定に <b><a href="https://www.ffmpeg.org/" target="_blank">FFmpeg</a></b> を必要とします。</p>
     <p>FFmpegとは、the FFmpeg developersが開発したフリーのクロスプラットフォーム・マルチメディアフレームワークであり、動画や音声の再生・記録・デコード・エンコード等の処理が行えます。</p>
@@ -113,6 +112,9 @@
     <h4>・グラフについて</h4>
     <br>
     <img src="src_html\Plot.jpg" title="Plot">
+    <br>
+    <small>Powered by matplotlib 3.1.3</small>
+    <br>
     <p>縦軸がラウドネス[LUFS]、横軸が時間[s]を表しています。</p>
     <p>グラフの色分けは以下の通りです。</p>
     <p><b>- 黒点線: Target</b></p>
@@ -138,4 +140,5 @@
     <br>
 </body>
 <small><center>Copyright (c) 2020 Ippee</center></small>
+<small><center>Released under <a href="https://github.com/ippee/LoudnessChecker/blob/master/LICENSE">the MIT license</a>.</center></small>
 </html>
