@@ -15,7 +15,7 @@
 # License agreement for matplotlib 3.1.3 | https://matplotlib.org/users/license.html
 # 
 
-version = "Ver. 2.1.0"
+version = "Ver. 3.0.0 β"
 
 import sys
 import re
@@ -26,6 +26,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.filedialog as filedialog
 import tkinter.messagebox as messagebox
+from tkinter import tix
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from src.FFmpeg_FileExt import getExtList
@@ -245,7 +246,7 @@ class CheckLoudness:
                 res[5] = ""
                 res[6] = "Target                      :  {} LUFS".format(adjustSpace(str(self.target)))
                 res[7] = ""
-                res[8] = "Absolute Scale"
+                res[8] = "Absolute Loudness"
                 res[9] = "  Integrated Loudness       :  {} LUFS".format(summary[0])
                 res[10] = "  Max. Momentary Loudness   :  {} LUFS (time: {} s)".format(adjustSpace(str(max_mLoud_value)), time[max_mLoud_index])
                 res[11] = "  Max. Short-term Loudness  :  {} LUFS (time: {} s)".format(adjustSpace(str(max_sLoud_value)), time[max_sLoud_index])
@@ -261,7 +262,7 @@ class CheckLoudness:
                         mLU = adjustSpace(mLU)
                         sLU = adjustSpace(sLU)
 
-                        res[13] = "Relative Scale"
+                        res[13] = "Relative Loudness"
                         res[14] = "  Integrated Loudness       :  {} LU".format(iLU)
                         res[15] = "  Max. Momentary Loudness   :  {} LU (time: {} s)".format(mLU, time[max_mLoud_index])
                         res[16] = "  Max. Short-term Loudness  :  {} LU (time: {} s)".format(sLU, time[max_sLoud_index])
@@ -277,23 +278,27 @@ class CheckLoudness:
 
 
         # グラフ出力
-        def ResultPlot(self, time, mLoud, sLoud, iLoud, audioName):
+        def ResultPlot(self, time, mLoud, sLoud, iLoud, scale, audioName):
                 g_m = plt.plot(time, mLoud, label="Momentary", color="blue")
                 g_s = plt.plot(time, sLoud, label="Short-term", color="yellow")
                 g_i = plt.plot(time, iLoud, label="Integrated", color="red")
 
-                RL = iLoud[round(len(iLoud)/2)] - 10 # 下方向の表示範囲
-                RH = max(mLoud) + 5 # 上方向の表示範囲
-                if self.target != "N/A":
-                        targetLine = plt.hlines([self.target], time[0], time[len(time)-1], "black", linestyles="dashed")
+                if scale[0] == "":
+                        RL = iLoud[round(len(iLoud)/2)] - 10 # 下方向の表示範囲
+                        RH = max(mLoud) + 5 # 上方向の表示範囲
+                        if self.target != "N/A":
+                                targetLine = plt.hlines([self.target], time[0], time[len(time)-1], "black", linestyles="dashed")
 
-                        # Targetに合わせてグラフの表示範囲を変更
-                        if RL > self.target:
-                                RL = self.target - 2
-                                RH = max(mLoud) + 3
-                        if RH < self.target:
-                                RL = iLoud[len(iLoud)-1] - 3
-                                RH = self.target + 2
+                                # Targetに合わせてグラフの表示範囲を変更
+                                if RL > self.target:
+                                        RL = self.target - 2
+                                        RH = max(mLoud) + 3
+                                if RH < self.target:
+                                        RL = iLoud[len(iLoud)-1] - 3
+                                        RH = self.target + 2
+                else:
+                        RL = scale[0]
+                        RH = scale[1]
                         
                 plt.ylim(RL, RH)
                 plt.title("Result - {}".format(audioName), fontsize=18)
@@ -333,72 +338,217 @@ class LoudnessCheckerGUI(ttk.Frame):
                 menubar.add_cascade(label="Menu", menu=menu)
 
                 root.config(menu=menubar)
+        
 
+                # ウィジェット配置
+                ## Title
+                label_title = ttk.Label(frm_input, text="Loudness Checker", font=("","20","bold"))
+                label_title.pack(side="top", pady=5)
 
-                # ウィジェット用変数を定義
+                label_expainApp = ttk.Label(frm_input, justify="center",text="- {} -\nAlgorithm: EBU R128\n".format(version), font=("","12"))
+                label_expainApp.pack(side="top")
+
+                
+                ## Path
                 self.filepath = tk.StringVar() # 入力したパスを入れる変数
                 self.correntDir = os.getcwd() # カレントディレクトリ取得、ダイアログの表示に使う
+
+                label_path = ttk.Label(frm_input,justify="center",text="Audio / Video file path", font=("","14","bold"))
+                label_path.pack(side="top")
+
+                label_Codecs = ttk.Label(frm_input,justify="center",text="Codecs: wav, mp3, ogg, flac, mp4, avi, flv, etc.", font=("","12"))
+                label_Codecs.pack(side="top", pady=5)
+
+                self.entry_filepath = ttk.Entry(frm_input,text="", font=("","10"), width=62, justify="center", textvariable= self.filepath)
+                self.entry_filepath.pack(side="top", padx=5)
+
+                button_broese = ttk.Button(frm_input,text="Browse…",command = self.openFileDialog)
+                button_broese.pack(side="top", pady=5)
+
+                
+                ## Target
                 self.target = tk.StringVar() # Targetを入れる変数
                 if self.settings[1]=="N/A":
                         self.target.set("")
                 else:
                         self.target.set(self.settings[1])
-                
 
-                # ウィジェット配置
-                label_title = ttk.Label(frm_input, text="Loudness Checker", font=("","20","bold")) # タイトル
-                label_title.pack(side="top", pady=5)
-
-                label_expainApp = ttk.Label(frm_input, justify="center",text="- {} -\nAlgorithm: EBU R128\n".format(version), font=("","12")) # アプリ説明文
-                label_expainApp.pack(side="top")
-                
-                label_path = ttk.Label(frm_input,justify="center",text="Audio / Video file path", font=("","14","bold")) # Auidio / Video file path
-                label_path.pack(side="top")
-
-                label_Codecs = ttk.Label(frm_input,justify="center",text="Codecs: wav, mp3, ogg, flac, mp4, avi, flv, etc.", font=("","12")) # 対応コーデック
-                label_Codecs.pack(side="top")
-
-                self.entry_filepath = ttk.Entry(frm_input,text="", font=("","10"), width=62, justify="center", textvariable= self.filepath) # パス入力
-                self.entry_filepath.pack(side="top", padx=5) # パス入力ボックス配置
-
-                button_open = ttk.Button(frm_input,text="Browse…",command = self.openFileDialog) # 参照ボタン
-                button_open.pack(side="top", pady=5)
-                
-                label_target = ttk.Label(frm_input,justify="center",text="\nTarget", font=("","14","bold")) # Target
+                label_target = ttk.Label(frm_input,justify="center",text="\nTarget", font=("","14","bold"))
                 label_target.pack(side="top")
 
                 label_explainTarget = ttk.Label(frm_input,justify="center",text="Set a loudness target [LUFS]\n(Leaving this field blank will disable the target. )", font=("","12")) # Target
-                label_explainTarget.pack(side="top")
+                label_explainTarget.pack(side="top", pady=5)
 
-                self.entry_target = ttk.Entry(frm_input,text="", font=("","10"), width=62, justify="center", textvariable= self.target) # Target入力
-                self.entry_target.pack(side="top", padx=5) # Target入力ボックス配置
+                self.entry_target = ttk.Entry(frm_input,text="", width=62, justify="center", textvariable= self.target, font=("","10"))
+                self.entry_target.pack(side="top", padx=5)
 
-                self.button_analyze = ttk.Button(frm_input,text="Analyze",command = self.clickedAnalyze) # アナライズボタン
-                self.button_analyze.pack(side="top", pady=17) # 分析ボタン配置
 
-                label_res = ttk.Label(frm_result,text="Result", font=("","14","bold")) # Result
+                ## Scale
+                rangeList = ["Custom", "Automatic", "EBU+18", "EBU+9"]
+                self.def_rangeVer = tk.StringVar()
+                self.upper =tk.StringVar()
+                self.lower =tk.StringVar()
+
+                if settings[3] == "EBU+9":
+                        ini_state = "readonly"
+                        self.upper.set("-14")
+                        self.lower.set("-41")
+                elif settings[3] == "EBU+18":
+                        ini_state = "readonly"
+                        self.upper.set("-5")
+                        self.lower.set("-59")
+                elif settings[3] == "Automatic":
+                        ini_state = "readonly"
+                        self.upper.set("")
+                        self.lower.set("")
+                elif settings[3] == "Custom":
+                        ini_state = "active"
+                
+
+                label_range = ttk.Label(frm_input,justify="center",text="\nScale", font=("","14","bold"))
+                label_range.pack(side="top")
+
+                label_explainRange = ttk.Label(frm_input,justify="center",text="Set a range of visible loudness", font=("","12"))
+                label_explainRange.pack(side="top", pady=5)
+
+                ### フレーム作成
+                frm_range = tk.Frame(frm_input)
+                frm_range.pack(side="top", pady=5)
+
+                entry_upper = ttk.Entry(frm_range, justify="center", text="", textvariable=self.upper, width=5, state=ini_state, font=("","10"))
+                entry_lower = ttk.Entry(frm_range, justify="center", text="", textvariable=self.lower, width=5, state=ini_state, font=("","10"))
+                label_tilde = ttk.Label(frm_range,justify="center",text="～", font=("","12"))
+                label_LUFS = ttk.Label(frm_range,justify="center",text="LUFS", font=("","12"))
+                
+                opt_range = tk.Spinbox(frm_range, justify="center", values=rangeList, textvariable=self.def_rangeVer, width=12, state="readonly", font=("", "12"))
+                opt_range.config(command=lambda: self.chengeUpLowValues(opt_range, entry_upper, entry_lower, self.upper, self.lower))
+                self.def_rangeVer.set(settings[3]) # 後からしか初期値を指定できない
+
+                opt_range.pack(side="left", padx=10)
+                entry_lower.pack(side="left", padx=5)
+                label_tilde.pack(side="left", padx=5)
+                entry_upper.pack(side="left", padx=5)
+                label_LUFS.pack(side="left", padx=5)
+
+
+                ## Analyze (Resetボタン欲しい)
+                self.button_analyze = ttk.Button(frm_input,text="Analyze",command = self.clickedAnalyze)
+                self.button_analyze.pack(side="top", pady=20)
+
+
+                ## Result
+                label_res = ttk.Label(frm_result,text="Result", font=("","14","bold"))
                 label_res.pack(side="top", pady=10)
                 
-                self.textbox = tk.Text(frm_result, width=400, height=400) # Resultのテキストボックス
-                self.textbox.pack(side="top", padx=5) # Result配置
+                self.textbox = tk.Text(frm_result, width=400, height=400)
+                self.textbox.pack(side="top", padx=5)
 
 
+        # スケールのウィジェットをまとめて配置
+
+
+        # ファイルダイアログを開いてentry_filepathに反映させる
+        def openFileDialog(self):
+                file = filedialog.askopenfilename(initialdir = self.correntDir)
+                if file == "":
+                        return "break"
+                self.correntDir = file[0:file.rfind( "/" ) + 1] # 再びダイアログを開いたとき、さっき選択したファイルの所からスタートする
+                self.filepath.set(file)
+        
+
+        # optMenuの選択肢によってentry_upper/lowerの値を変える
+        def chengeUpLowValues(self, opt, entry_upper, entry_lower, upper, lower):
+                if opt.get() == "EBU+9":
+                        entry_upper.config(state="readonly", textvariable=upper.set("-14"))
+                        entry_lower.config(state="readonly", textvariable=lower.set("-41"))
+                elif opt.get() == "EBU+18":
+                        entry_upper.config(state="readonly", textvariable=upper.set("-5"))
+                        entry_lower.config(state="readonly", textvariable=lower.set("-59"))
+                elif opt.get() == "Automatic":
+                        entry_upper.config(state="readonly", textvariable=upper.set(""))
+                        entry_lower.config(state="readonly", textvariable=lower.set(""))
+                elif opt.get() == "Custom":
+                        entry_upper.config(state="active")
+                        entry_lower.config(state="active")
+
+
+        # アナライズボタンクリック時
+        def clickedAnalyze(self):
+                if self.filepath.get() == "":
+                        messagebox.showerror("ERROR", "Enter a valid path!")
+                        return
+                
+                target = self.entry_target.get()
+                if target == "":
+                        target = "N/A"
+                elif is_float(target) == False:
+                        messagebox.showerror("ERROR", "Set a valid target!")
+                        return
+                else:
+                        target = float(target)
+                
+                scale = [self.lower.get(), self.upper.get()]
+                if scale[0] == "" and scale[1] == "": # scaleがAutomaticのとき
+                        pass
+                else:
+                        for i in range(len(scale)):
+                                if is_float(scale[i]) == False:
+                                        messagebox.showerror("ERROR", "Set valid scale values!")
+                                        return
+                                scale[i] = float(scale[i])
+
+                        if scale[0] >= scale[1]:
+                                messagebox.showerror("ERROR", "The upper scale limit must be higher than the lower one!")
+                                return
+
+
+                path = self.entry_filepath.get()
+                path = deleteStr(path, '"', "'") # pathに " とか ' が含まれていても一旦消す
+                path = path.replace("\\", "/") # スラッシュを統一
+                ext = path[path.rfind(".")+1 : len(path)] # 拡張子取得
+
+                # 入力されたファイルがffmpegに対応しているかチェック
+                if ext not in self.ext_list:
+                        messagebox.showerror("ERROR", "This file or path is invalid!")
+                        self.button_analyze.config(state="active", text="Analyze")
+                        return
+
+                self.button_analyze.config(state="disable", text="Runing…") # ボタン止める
+                plt.close() # グラフ開いてたら閉じる
+                
+                CL = CheckLoudness(path, target)
+                res, time, mLoud, sLoud, iLoud, audioName = CL.audioAnalyze() # 分析結果とファイル名を取得
+
+                if res == "b": # "break!"が帰ってきたら分析結果の出力を中止
+                        return
+                
+                self.button_analyze.config(state="active", text="Analyze") # ボタン復活
+
+                self.textbox.delete("1.0", "end") # テキストボックスを空にする
+                for i in range(len(res)):
+                        self.textbox.insert(str(i+1)+".0", res[i]+"\n") # 結果をテキストボックスに出力
+                
+                CL.ResultPlot(time, mLoud, sLoud, iLoud, scale, audioName) # グラフ出力
+
+        
         # About Loudness Checkerを開く
         def aboutLoudnessChecker(self):
+                # ウインドウ設定
                 aboutWindow = tk.Toplevel(self) # アプリ紹介ウインドウ表示
                 aboutWindow.geometry("400x250")
                 aboutWindow.resizable(0,0)
                 aboutWindow.title("About Loudness Checker")
 
+                # ウィジェット配置
                 label_appName = ttk.Label(aboutWindow, justify="center", text="Loudness Checker {}".format(version), font=("","14","bold"))
                 label_appName.pack(side="top", pady=5)
+
                 label_license = ttk.Label(aboutWindow, justify="left", text="\n- Copyright (c) 2020 Ippee\n\n- This application is released under the MIT License, \n   see MIT_LICENSE.txt.\n\n- Loudness Checker uses   Python 3.6.4\n" + " "*37 + "Matplotlib 3.1.3\n", font=("","12"))
                 label_license.pack(side="top")
 
-                # リンク追加
                 link = ttk.Label(aboutWindow, justify="left", text="https://github.com/ippee/LoudnessChecker", foreground="blue", font=("","12","normal","roman", "underline"))
                 link.pack(side="top")
-                link.bind("<Button-1>", lambda self: webbrowser.open("https://github.com/ippee/LoudnessChecker"))
+                link.bind("<Button-1>", lambda self: webbrowser.open("https://github.com/ippee/LoudnessChecker")) # リンク追加
 
                 button_close_a = ttk.Button(aboutWindow, text="Close", command=aboutWindow.destroy)
                 button_close_a.pack(side="top", pady=10)
@@ -424,6 +574,7 @@ class LoudnessCheckerGUI(ttk.Frame):
                 pref.resizable(0,0)
                 pref.title("Preferences")
 
+                # ウィジェット配置
                 label_title_p = ttk.Label(pref, justify="left", text="Default Settings", font=("","14","bold"))
                 label_title_p.pack(side="top", padx=5, pady=5)
 
@@ -455,65 +606,15 @@ class LoudnessCheckerGUI(ttk.Frame):
                 # setting.ini書き出し
                 f = open("setting.ini", 'w', encoding='utf-8')
                 for i in range(len(self.settings)):
-                        f.write(str(self.settings[i]))
+                        if i != len(self.settings)-1:
+                                f.write(str(self.settings[i])+"\n")
+                        elif i == len(self.settings)-1:
+                                f.write(str(self.settings[i]))
                 f.close()
 
                 pref.destroy()
 
                 messagebox.showinfo("Info", "Settings ware saved!")
-
-                
-        # ファイルダイアログを開いてentry_filepathに反映させる
-        def openFileDialog(self):
-                file = filedialog.askopenfilename(initialdir = self.correntDir)
-                if file == "":
-                        return "break"
-                self.correntDir = file[0:file.rfind( "/" ) + 1] # 再びダイアログを開いたとき、さっき選択したファイルの所からスタートする
-                self.filepath.set(file)
-        
-
-        # アナライズボタンクリック時
-        def clickedAnalyze(self):
-                if self.filepath.get() == "":
-                        messagebox.showerror("ERROR", "Enter a valid path!")
-                        return
-                
-                target = self.entry_target.get()
-                if target == "":
-                        target = "N/A"
-                elif is_float(target) == False:
-                        messagebox.showerror("ERROR", "Set a valid target!")
-                        return
-                else:
-                        target = float(target)
-
-                path = self.entry_filepath.get()
-                path = deleteStr(path, '"', "'") # pathに " とか ' が含まれていても一旦消す
-                path = path.replace("\\", "/") # スラッシュを統一
-                ext = path[path.rfind(".")+1 : len(path)] # 拡張子取得
-
-                # 入力されたファイルがffmpegに対応しているかチェック
-                if ext not in self.ext_list:
-                        messagebox.showerror("ERROR", "This file or path is invalid!")
-                        self.button_analyze.config(state="active", text="Analyze")
-                        return
-
-                self.button_analyze.config(state="disable", text="Runing…") # ボタン止める
-                plt.close() # グラフ開いてたら閉じる
-                
-                CL = CheckLoudness(path, target)
-                res, time, mLoud, sLoud, iLoud, audioName = CL.audioAnalyze() # 分析結果とファイル名を取得
-
-                if res == "b": # "break!"が帰ってきたら分析結果の出力を中止
-                        return
-                
-                self.button_analyze.config(state="active", text="Analyze") # ボタン復活
-
-                self.textbox.delete("1.0", "end") # テキストボックスを空にする
-                for i in range(len(res)):
-                        self.textbox.insert(str(i+1)+".0", res[i]+"\n") # 結果をテキストボックスに出力
-                
-                CL.ResultPlot(time, mLoud, sLoud, iLoud, audioName) # グラフ出力
         
 
 
@@ -530,7 +631,7 @@ if __name__ == '__main__':
         
         # root設定
         root = tk.Tk()
-        root.geometry("900x370")
+        root.geometry("900x510")
         root.resizable(0,0)
         root.title("Loudness Checker {}".format(version))
         root.iconbitmap(default=resource_path("src/icon.ico"))
@@ -538,12 +639,14 @@ if __name__ == '__main__':
         # 初期設定読み込み
         if "setting.ini" not in os.listdir(os.getcwd()):
                 messagebox.showwarning("WARNING", '"setting.ini" is missing!\nInitialize all settings.')
-                factory_settings = '[Target_value] ;Enter a float or "N/A"(strings)\nN/A'
+                factory_settings = '[Target_value] ;Enter a float or "N/A"(strings)\nN/A\n[Scale]\nEBU+9'
                 f = open("setting.ini", 'w', encoding='utf-8')
                 f.write(factory_settings)
                 f.close()
         
         settings = readFile("setting.ini") # setting.ini読み込み、targetの初期値が入ってる
+        for i in range(len(settings)):
+                settings[i] = deleteStr(settings[i], "\n")
 
         # ffmpegが対応しているコーデックのリストを取得
         ext_list = getExtList()
