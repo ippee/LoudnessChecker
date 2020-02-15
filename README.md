@@ -10,7 +10,7 @@ DTMをやっていると、色んな曲のラウドネスを計測したくな�
 っていう手間が死ぬほど面倒だったので、DAWなし単体で動くアプリを作りました  
 このアプリが楽曲制作の手助けになれば幸いです  
 　  
-**Download: LoudnessChecker.zip**（Ver. 2.0.3）  
+**Download: LoudnessChecker.zip**（Ver. 2.1.0）  
 https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS  
 　  
 セキュリティによってダウンロードがブロックされる可能性がありますが、  
@@ -99,7 +99,7 @@ http://www.ffmpeg.org/general.html#File-Formats
 　  
 ## その他（補足など）
 ### アプリについて
-- **Loudness Checker Ver. 2.0.3**
+- **Loudness Checker Ver. 2.1.0**
 - Copyright (c) 2020 Ippee
 - このアプリケーションはMIT Licenseのもとで公開されています
 - 動作環境: 
@@ -108,14 +108,6 @@ http://www.ffmpeg.org/general.html#File-Formats
 - 使用言語 / ライブラリ:
   - Python 3.6.4
   - Matplotlib 3.1.3
-　  
-　  
-## 更新履歴
-- 2020/02/14: setting.iniに関するバグの修正、Helpの誤字修正（V2.0.3）
-- 2020/02/13: matplotlib 3.1.3に対応、メイン画面/Preferencesの表示アルゴリズム変更、GUIの調整（V2.0.2）
-- 2020/02/13: GUIを大幅に変更、Preferencesの追加、チェックボックスの廃止、測定結果の表示形式を変更（V2.0.1）
-- …
-- 2020/02/07: 本アプリ公開（V1.0）
 　  
 　  
 ## 特に参考にしたサイト
