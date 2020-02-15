@@ -103,7 +103,11 @@ def adjustSpace(str):
 
 
 
+<<<<<<< HEAD
 ### 音声処理関連 ###
+=======
+### 音声処理 ###
+>>>>>>> 3d0bc2e92c37c993c52661c4f4cd5a39d259fd22
 class CheckLoudness:
         def __init__(self, path, target):
                 self.path = path
@@ -513,7 +517,11 @@ class LoudnessCheckerGUI(ttk.Frame):
                 for i in range(len(res)):
                         self.textbox.insert(str(i+1)+".0", res[i]+"\n") # 結果をテキストボックスに出力
                 
+<<<<<<< HEAD
                 CL.ResultPlot(time, mLoud, sLoud, iLoud, audioName) # グラフ出力
+=======
+                ResultPlot(time, mLoud, sLoud, iLoud, audioName, target) # グラフ出力
+>>>>>>> 3d0bc2e92c37c993c52661c4f4cd5a39d259fd22
         
 
 
