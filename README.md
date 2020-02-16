@@ -70,7 +70,8 @@ https://ffmpeg.zeranoe.com/builds/
   
 が、一括出力されます  
 　  
-もうちょっと詳しい使い方については、srcファイルより**Help.html**をご覧ください  
+もうちょっと詳しい使い方については、下リンクより**Help**をご覧ください  
+https://ippee.github.io/LoudnessChecker/  
 　  
 ### 対応ファイル
 **FFmpegがサポートしている全てのオーディオ/ビデオ形式に対応しました！**  
