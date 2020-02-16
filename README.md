@@ -13,6 +13,9 @@ DTMをやっていると、色んな曲のラウドネスを計測したくな�
 **Download: LoudnessChecker.zip**（Ver. 2.2.1）  
 https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS  
 　  
+**Help: How To Use Loudness Checker**  
+https://ippee.github.io/LoudnessChecker/  
+　  
 セキュリティによってダウンロードがブロックされる可能性がありますが、  
 それはこのアプリにコード署名とかコードサイニング証明書がないから（らしい）ので、  
 アプリ起動したらPCが爆発するとか、そういうことはないのでご安心ください  
@@ -20,7 +23,8 @@ https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS
 　  
 ![GUI](https://raw.githubusercontent.com/ippee/LoudnessChecker/master/Picture/GUI.jpg)
 
-![Plot](https://raw.githubusercontent.com/ippee/LoudnessChecker/master/Picture/plot.jpg)
+![Plot](https://raw.githubusercontent.com/ippee/LoudnessChecker/master/Picture/plot.jpg)  
+Powered by matplotlib 3.1.3  
 
 　  
 　  
