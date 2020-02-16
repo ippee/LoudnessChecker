@@ -1,6 +1,11 @@
 # Update History
 
 ## Version 2
+### 2020/02/16: V2.2.0
+- Scale機能追加
+- setting.iniに関するバグの修正
+- 誤字修正
+　  
 ### 2020/02/15: V2.1.0
 - ソースコードの視覚性向上
 - ext_listの読み込み方法の変更（.txt → .py）

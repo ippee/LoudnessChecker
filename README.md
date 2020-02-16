@@ -10,7 +10,7 @@ DTMをやっていると、色んな曲のラウドネスを計測したくな�
 っていう手間が死ぬほど面倒だったので、DAWなし単体で動くアプリを作りました  
 このアプリが楽曲制作の手助けになれば幸いです  
 　  
-**Download: LoudnessChecker.zip**（Ver. 2.1.0）  
+**Download: LoudnessChecker.zip**（Ver. 2.2.0）  
 https://drive.google.com/open?id=13KVBC-UYAaCU7e76l1XcXg1h-lLkakBS  
 　  
 セキュリティによってダウンロードがブロックされる可能性がありますが、  
@@ -47,8 +47,9 @@ https://ffmpeg.zeranoe.com/builds/
 1. **Loudness Checker.exe** を起動（ちょっと時間かかる）
 2. **Browse…** からファイルを指定 or ファイルのパスをテキストボックスに入力
 3. **Target** を決める（不要なら空欄にする）
-4. **Analyze** をクリックで解析開始、謎ウインドウが出てくるけど、しばし待たれよ
-5. **Result** に結果（グラフ付き）が出力される
+4. **Scale** でグラフの表示範囲を決める
+5. **Analyze** をクリックで解析開始、謎ウインドウが出てくるけど、しばし待たれよ
+6. **Result** に結果（グラフ付き）が出力される
   
 これだけ、超簡単です  
 　  
@@ -56,9 +57,9 @@ https://ffmpeg.zeranoe.com/builds/
 - **Sample Peak** \[dBFS]
 - **True Peak** \[dBTP]
 - **Target** \[LUFS] (Target指定時のみ、Relative Scaleの結果も表示する)
-- **Integrated Loudness** (Absolute/Relative Scale) \[LUFS, LU]
-- **Max. Momentary Loudness** (Absolute/Relative Scale) \[LUFS, LU]
-- **Max. Short-term Loudness** (Absolute/Relative Scale) \[LUFS, LU]
+- **Integrated Loudness** (Absolute/Relative Loudness) \[LUFS, LU]
+- **Max. Momentary Loudness** (Absolute/Relative Loudness) \[LUFS, LU]
+- **Max. Short-term Loudness** (Absolute/Relative Loudness \[LUFS, LU]
 - **Loudness Range** \[LU]
   - **High** \[LUFS]
   - **Low** \[LUFS]
@@ -99,7 +100,7 @@ http://www.ffmpeg.org/general.html#File-Formats
 　  
 ## その他（補足など）
 ### アプリについて
-- **Loudness Checker Ver. 2.1.0**
+- **Loudness Checker Ver. 2.2.0**
 - Copyright (c) 2020 Ippee
 - このアプリケーションはMIT Licenseのもとで公開されています
 - 動作環境: 

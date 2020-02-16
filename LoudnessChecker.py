@@ -15,7 +15,7 @@
 # License agreement for matplotlib 3.1.3 | https://matplotlib.org/users/license.html
 # 
 
-version = "Ver. 3.0.0 β"
+version = "Ver. 2.2.0"
 
 import sys
 import re
@@ -39,7 +39,6 @@ def resource_path(relative_path):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.abspath(relative_path)
 
-
 # 文字列がfloatに変換できるかどうかを判別する関数
 def is_float(s):
         try:
@@ -47,7 +46,6 @@ def is_float(s):
         except:
                 return False
         return True
-
 
 # キーワードをファイル名に含むファイルの一覧を取得
 def searchFile(keyword):
@@ -103,9 +101,16 @@ def adjustSpace(str):
                 str = " "*(5-len(str)) + str
         return str
 
+# setting.iniを初期化
+def resetSettingIni():
+        factory_settings = '[Target_value] ;Enter a float or "N/A"(strings)\nN/A\n[Scale name]\nEBU+9\n[Lower scale limit]\n-41\n[Upper scale limit]\n-14'
+        f = open("setting.ini", 'w', encoding='utf-8')
+        f.write(factory_settings)
+        f.close()
 
 
-### 音声処理関連 ###
+
+### ラウドネス解析 ###
 class CheckLoudness:
         def __init__(self, path, target):
                 self.path = path
@@ -311,10 +316,12 @@ class CheckLoudness:
 
 
 ### GUI作成 ###
+# Scale関連のウィジェットを一括配置
 class SetScaleWidget(ttk.Frame):
-        def __init__(self, root):
+        def __init__(self, root, settings):
                 super().__init__(root)
                 self.pack()
+                self.settings = settings
 
                 ## Scale
                 rangeList = ["Custom", "Automatic", "EBU+18", "EBU+9"]
@@ -322,22 +329,22 @@ class SetScaleWidget(ttk.Frame):
                 self.upper = tk.StringVar()
                 self.lower = tk.StringVar()
 
-                if settings[3] == "EBU+9":
+                if self.settings[3] == "EBU+9":
                         ini_state = "readonly"
                         self.upper.set("-14")
                         self.lower.set("-41")
-                elif settings[3] == "EBU+18":
+                elif self.settings[3] == "EBU+18":
                         ini_state = "readonly"
                         self.upper.set("-5")
                         self.lower.set("-59")
-                elif settings[3] == "Automatic":
+                elif self.settings[3] == "Automatic":
                         ini_state = "readonly"
                         self.upper.set(" ")
                         self.lower.set(" ")
-                elif settings[3] == "Custom":
+                elif self.settings[3] == "Custom":
                         ini_state = "active"
-                        self.upper.set(settings[5])
-                        self.lower.set(settings[4])
+                        self.lower.set(self.settings[5])
+                        self.upper.set(self.settings[7])
                 
 
                 label_range = ttk.Label(self,justify="center",text="\nScale", font=("","14","bold"))
@@ -357,7 +364,7 @@ class SetScaleWidget(ttk.Frame):
                 
                 self.spin_range = tk.Spinbox(frm_range, justify="center", values=rangeList, textvariable=def_rangeVer, width=12, state="readonly", font=("", "12"))
                 self.spin_range.config(command=lambda: self.chengeUpLowValues(self.spin_range, entry_upper, entry_lower, self.upper, self.lower))
-                def_rangeVer.set(settings[3]) # 後からしか初期値を指定できない
+                def_rangeVer.set(self.settings[3]) # 後からしか初期値を指定できない
 
                 self.spin_range.pack(side="left", padx=10)
                 entry_lower.pack(side="left", padx=5)
@@ -369,17 +376,17 @@ class SetScaleWidget(ttk.Frame):
         # optMenuの選択肢によってentry_upper/lowerの値を変える
         def chengeUpLowValues(self, spin_range, entry_upper, entry_lower, upper, lower):
                 if spin_range.get() == "EBU+9":
-                        entry_upper.config(state="readonly", textvariable=upper.set("-14"))
                         entry_lower.config(state="readonly", textvariable=lower.set("-41"))
+                        entry_upper.config(state="readonly", textvariable=upper.set("-14"))
                 elif spin_range.get() == "EBU+18":
-                        entry_upper.config(state="readonly", textvariable=upper.set("-5"))
                         entry_lower.config(state="readonly", textvariable=lower.set("-59"))
+                        entry_upper.config(state="readonly", textvariable=upper.set("-5"))
                 elif spin_range.get() == "Automatic":
-                        entry_upper.config(state="readonly", textvariable=upper.set(" "))
                         entry_lower.config(state="readonly", textvariable=lower.set(" "))
+                        entry_upper.config(state="readonly", textvariable=upper.set(" "))
                 elif spin_range.get() == "Custom":
-                        entry_upper.config(state="active", textvariable=upper.set(settings[5]))
-                        entry_lower.config(state="active", textvariable=lower.set(settings[4]))
+                        entry_lower.config(state="active", textvariable=lower.set(self.settings[5]))
+                        entry_upper.config(state="active", textvariable=upper.set(self.settings[7]))
         
 
         # Upper/Lower Scale Limitの取得
@@ -405,11 +412,12 @@ class SetScaleWidget(ttk.Frame):
                 return self.spin_range.get()
         
         # 説明文を変更
-        def chengeDescription(self):
-                self.label_explainRange.config(text="Set a default range of visible loudness")
+        def chengeDescription(self, text):
+                self.label_explainRange.config(text=text)
 
 
 
+# メインウインドウの作成
 class LoudnessCheckerGUI(ttk.Frame):
         def __init__(self, root, settings, ext_list):
                 super().__init__(root)
@@ -418,7 +426,7 @@ class LoudnessCheckerGUI(ttk.Frame):
                 self.ext_list = ext_list
 
                 # 画面の分割
-                pw_main = tk.PanedWindow(self, sashwidth=4, orient="horizontal") # ペインドウインドウ作る
+                pw_main = tk.PanedWindow(self, sashwidth=4, orient="horizontal") # ペインドウインドウ作る（縦割り）
                 pw_main.pack(side="top", fill="both")
 
                 frm_input = tk.Frame(pw_main, bd=2, relief="ridge") # フレームを使って左右に分割
@@ -484,10 +492,10 @@ class LoudnessCheckerGUI(ttk.Frame):
 
 
                 ## Scale
-                self.scale_main = SetScaleWidget(frm_input)
+                self.scale_main = SetScaleWidget(frm_input, self.settings)
 
 
-                ## Analyze (Resetボタン欲しい)
+                ## Analyze
                 self.button_analyze = ttk.Button(frm_input,text="Analyze",command = self.clickedAnalyze)
                 self.button_analyze.pack(side="top", pady=22)
 
@@ -601,6 +609,7 @@ class LoudnessCheckerGUI(ttk.Frame):
                 pref.title("Preferences")
 
                 # ウィジェット配置
+                # Target
                 label_title_p = ttk.Label(pref, justify="left", text="Target", font=("","14","bold"))
                 label_title_p.pack(side="top", padx=5, pady=5)
 
@@ -610,9 +619,11 @@ class LoudnessCheckerGUI(ttk.Frame):
                 entry_target_p = ttk.Entry(pref,text="", font=("","10"), width=100, justify="center", textvariable=def_target)
                 entry_target_p.pack(side="top", padx=5, pady=5)
 
-                scale_pref = SetScaleWidget(pref)
-                scale_pref.chengeDescription()
+                # Scale
+                scale_pref = SetScaleWidget(pref, self.settings)
+                scale_pref.chengeDescription("Set a default range of visible loudness")
 
+                # Button
                 frm_button_p = ttk.Frame(pref)
                 frm_button_p.pack(side="top", pady=20)
 
@@ -641,8 +652,8 @@ class LoudnessCheckerGUI(ttk.Frame):
 
                 self.settings[1] = target
                 self.settings[3] = scaleName
-                self.settings[4] = scale[0]
-                self.settings[5] = scale[1]
+                self.settings[5] = scale[0]
+                self.settings[7] = scale[1]
 
                 # setting.ini書き出し
                 f = open("setting.ini", 'w', encoding='utf-8')
@@ -680,14 +691,31 @@ if __name__ == '__main__':
         # 初期設定読み込み
         if "setting.ini" not in os.listdir(os.getcwd()):
                 messagebox.showwarning("WARNING", '"setting.ini" is missing!\nInitialize all settings.')
-                factory_settings = '[Target_value] ;Enter a float or "N/A"(strings)\nN/A\n[Scale]\nEBU+9\n-41\n-14'
-                f = open("setting.ini", 'w', encoding='utf-8')
-                f.write(factory_settings)
-                f.close()
+                resetSettingIni()
         
         settings = readFile("setting.ini") # setting.ini読み込み、targetの初期値が入ってる
         for i in range(len(settings)):
                 settings[i] = deleteStr(settings[i], "\n")
+        
+        # setting.iniが適切かチェック
+        n = 0
+        if settings[1] == "N/A" or is_float(settings[1]) == True:
+                n += 1
+        if settings[3] in ["Custom", "Automatic", "EBU+18", "EBU+9"]:
+                n += 1
+        if settings[5] == " " and settings[5] == settings[7]:
+                n += 1
+        elif is_float(settings[5]) == True and is_float(settings[7]) == True:
+                if float(settings[5]) < float(settings[7]):
+                        n += 1
+        
+        if n != 3:
+                messagebox.showwarning("WARNING", '"setting.ini" is invalid!\nInitialize all settings.')
+                resetSettingIni()
+                settings = readFile("setting.ini") # setting.ini読み込み、targetの初期値が入ってる
+                for i in range(len(settings)):
+                        settings[i] = deleteStr(settings[i], "\n")
+                                
 
         # ffmpegが対応しているコーデックのリストを取得
         ext_list = getExtList()

@@ -3,13 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>How To Use Loudness Checker Ver. 2.1.0</title>
+    <title>How To Use Loudness Checker Ver. 2.2.0</title>
     <link rel="shortcut icon" href="icon.ico">
     <link rel="stylesheet" type="text/css" href="src_html\default.css">
 </head>
 <body>
-    <h1><center>How To Use Loudness Checker Ver. 2.1.0</center></h1>
-    <h2>What is Loudness Checker?</h2>
+    <h1><center>How To Use Loudness Checker Ver. 2.2.0</center></h1>
+    <h2>Index</h2>
+    <dl>
+        <dt>・<a href="#WhatIsLC">What is Loudness Checker?</a></dt>
+        <dt>・<a href="#HowToUse">使い方</a></dt>
+        <dd>- <a href="#HowToUse_1">1. Audio / Video file path</a></dd>
+        <dd>- <a href="#HowToUse_2">2. Target</a></dd>
+        <dd>- <a href="#HowToUse_3">3. Scale</a></dd>
+        <dd>- <a href="#HowToUse_4">4. Analyze</a></dd>
+        <dd>- <a href="#HowToUse_5">5. Result</a></dd>
+        <dt>・<a href="#Error">エラーリスト</a></dt>
+        <dd>- <a href="#Error_1">1. アプリ起動時のエラー</a></dd>
+        <dd>- <a href="#Error_2">2. ファイル入力時のエラー</a></dd>
+        <dd>- <a href="#Error_3">3. 測定時のエラー</a></dd>
+    </dl>
+    <br>
+
+    <h2 id="WhatIsLC">What is Loudness Checker?</h2>
     <br>
     <img src="icon.ico" title="icon">
     <p><b>"Loudness checker"</b> とは、入力された音声/映像のピークやラウドネス（アルゴリズム：EBU R128）を測定するWiodows専用アプリケーションです。</p>
@@ -28,11 +44,11 @@
     </ol>
     <p>　</p>
 
-    <h2>使い方</h2>
+    <h2 id="HowToUse">使い方</h2>
     <br>
     <img src="src_html\GUI.jpg" title="GUI">
     <p>　</p>
-    <h3>1. Audio / Video file path</h3>
+    <h3 id="HowToUse_1">1. Audio / Video file path</h3>
     <p>測定したい音声・映像ファイルのパスを入力します。</p>
     <p><b>"Browse…"</b> ボタンから測定したいファイルを選択するか、直接パスを入力してください。</p>
     <br>
@@ -48,65 +64,68 @@
     <a href="http://www.ffmpeg.org/general.html#File-Formats">2.1 File Formats - General Documentation | FFmpeg</a>
     <p>　</p>
 
-    <h3>2. Target</h3>
+    <h3 id="HowToUse_2">2. Target</h3>
     <p>目標とするラウドネスを <b>"Target"</b> に入力します（単位: LUFS）。</p>
     <p>ここに入力された数値は、ラウドネスの相対値の算出やグラフの出力に用いられます。</p>
     <p>数値は整数、または少数で入力してください。</p>
-    <p>この欄を空白にすることでターゲットを無効化することができ、その際 Relative Scale の結果は表示されなくなります。</p>
+    <p>この欄を空白にすることでターゲットを無効化することができ、その際、Relative Loudness の結果は表示されなくなります。</p>
     <br>
 
-    <h3>3. Analyze</h3>
-    <p><b>"Analyze"</b> ボタンをクリックすると ffmpeg.exe が立ち上がり、指定されたファイルの測定を開始します。</p>
-    <p>測定時に発生するエラーには、以下のようなものがあります。</p>
+    <h3 id="HowToUse_3">3. Scale</h3>
+    <p>グラフの表示範囲を設定します（Lower scale limit ～ Upper scale limit [LUFS]）。</p>
+    <p>選択できるスケールは以下の4つです。</p>
     <dl>
-        <dt><b>- <font color="red">"Enter a valid path!"</font></b></dt>
-        <dd>パス欄が空白であるときに出力されます。</dd>
+        <dt><b>- <font color="orange">EBU+9</font></b></dt>
+        <dd>-41 ～ -14 LUFS</dd>
         <br>
-        <dt><b>- <font color="red">"Set a valid target!"</font></b></dt>
-        <dd>ターゲット欄に無効な値が入力されているときに出力されます。</dd>
+        <dt><b>- <font color="orange">EBU+18</font></b></dt>
+        <dd>-59 ～ -5 LUFS</dd>
         <br>
-        <dt><b>- <font color="red">"This file or path is invalid!"</font></b></dt>
-        <dd>本アプリが対応していないファイル形式や、無効なパスが入力されているときに出力されます。</dd>
+        <dt><b>- <font color="orange">Automatic</font></b></dt>
+        <dd>分析した音声のラウドネスや設定したターゲットを基に、自動的に表示範囲を最適化します。</dd>
+        <dd>入力ソースとターゲットとの差異を確認する際に有効ですが、ソースによってスケールが異なるため、複数ソースを比較する際には適しません。</dd>
         <br>
-        <dt><b>- <font color="red">"Analysis failed! Exit the ffmpeg.exe and rerun this analysis."</font></b></dt>
-        <dd>何らかの理由で分析が中断されたときに出力されます。</dd>
-        <dd>FFmpeg.exe が起動していた場合は、コンソールを閉じた上で再度測定を行ってください。</dd>
-        <dd>よくある中断理由の例として、測定中に ffmpeg.exe のコンソール画面がクリックされ、分析が一時停止したためというものがあります。</dd>
-        <dd>上記の対処法として、ffmpeg.exe のタイトルバーを右クリックし、プロパティから編集オプションの <b>"簡易編集モード"</b> のチェックを外して OK をクリックしてください。</dd>
-        <dd>こうすることで、分析中にコンソール画面をクリックしても分析が一時停止しなくなります。</dd>
+        <dt><b>- <font color="orange">Custom</font></b></dt>
+        <dd>ユーザーが表示範囲を指定することができます。</dd>
+        <dd>数値は整数、または少数で入力してください。</dd>
+        <dd>また、両方の入力ボックスに半角スペースを入力すると、Automatic 機能として利用できます。</dd>
+        <br>
     </dl>
     <br>
 
-    <h3>4. Result</h3>
+    <h3 id="HowToUse_4">4. Analyze</h3>
+    <p><b>"Analyze"</b> ボタンをクリックすると ffmpeg.exe が立ち上がり、指定されたファイルの測定を開始します。</p>
+    <br>
+
+    <h3 id="HowToUse_5">5. Result</h3>
     <p>測定が終了すると、ラウドネスの推移を示したグラフと、測定結果が <b>"Result"</b> に表示されます。</p>
     <br>
     <h4>・測定結果の内容</h4>
     <dl>
-        <dt><b>- Sample Peak</b> [dBFS]</dt>
+        <dt><b>- <font color="orange">Sample Peak</font></b> [dBFS]</dt>
         <dd>デジタル信号のピーク。</dd>
         <br>
-        <dt><b>- True Peak</b> [dBTP]</dt>
+        <dt><b>- <font color="orange">True Peak</font></b> [dBTP]</dt>
         <dd>別名: Inter-sample Peak</dd>
         <dd>デジタル信号をアナログ信号に変換した際に検出されるピーク。</dd>
         <br>
-        <dt><b>- Target</b> [LUFS]</dt>
+        <dt><b>- <font color="orange">Target</font></b> [LUFS]</dt>
         <dd>目標とするラウドネスの数値。</dd>
-        <dd> Target指定時に、Relative Scale の結果も表示します。</dd>
+        <dd> Target指定時には、Relative Loudness の結果も表示します。</dd>
         <br>
-        <dt><b>- Integrated Loudness</b> (Absolute/Relative Scale) [LUFS, LU]</dt>
+        <dt><b>- <font color="orange">Integrated Loudess</font></b> (Absolute/Relative Loudness) [LUFS, LU]</dt>
         <dd>音声全体のラウドネス値。</dd>
         <dd>相対値の場合は、絶対値の Integrated Loudness [LUFS] と Target [LUFS] の比を、単位 LU で表示します。</dd>
-        <dd>計算式: Target[LUFS] - I (abs.)[LUFS] = I (rel.)[LU]</dd>
         <br>
-        <dt><b>- Max. Momentary Loudness</b> (Absolute/Relative Scale) [LUFS, LU]</dt>
+        <dt><b>- <font color="orange">Max. Momentary Loudness</font></b> (Absolute/Relative Loudness) [LUFS, LU]</dt>
         <dd>400ms単位で100msごとに取得されたラウドネスの最大値。</dd>
         <dd>相対値の場合は、絶対値の Max. Momentary Loudness [LUFS] と Target [LUFS] の比を、単位 LU で表示します。</dd>
         <br>
-        <dt><b>- Max. Short-term Loudness</b> (Absolute/Relative Scale) [LUFS, LU]</dt>
+        <dt><b>- <font color="orange">Max. Short-term Loudness</font></b> (Absolute/Relative Loudness) [LUFS, LU]</dt>
         <dd>3s単位で1sごとに取得されたラウドネスの最大値。</dd>
         <dd>相対値の場合は、絶対値の Max. Max. Short-term Loudness [LUFS] と Target [LUFS] の比を、単位 LU で表示します。</dd>
         <br>
-        <dt><b>- Loudness Range</b> [LU]</dt>
+        <dt><b>- <font color="orange">Loudness Range (LRA)</font></b> [LU]</dt>
         <dd>音声中の上位5%を除くラウドネスが最も高い部分（High）と、下位10%を除くラウドネスが最も低い部分（Low、無音部分を除く）との比。</dd>
     </dl>
     <br>
@@ -138,6 +157,49 @@
         <dt><b>- ホームボタン</b></dt>
         <dd>はじめに出力されたグラフの表示に戻ります。</dd>
     </dl>
+    <br>
+
+    <h2 id="Error">エラーリスト</h2>
+    <p>本アプリが出力するエラーは以下の通りです。</p>
+    <br>
+    <h3 id="Error_1">1. アプリ起動時のエラー</h3>
+    <dl>
+        <dt><b>- <font color="red">"setting.ini" is missing! Initialize all settings.</font></b></dt>
+        <dd>setting.ini が見つからない際に出力され、設定を初期化した setting.ini を生成します。</dd>
+        <br>
+        <dt><b>- <font color="red">"setting.ini" is invalid! Initialize all settings.</font></b></dt>
+        <dd>setting.ini に不具合が見られた際に出力され、setting.ini を初期化します。</dd>
+    </dl>
+    <br>
+    <h3 id="Error_2">2. ファイル入力時のエラー</h3>
+    <dl>
+        <dt><b>- <font color="red">Enter a valid path!</font></b></dt>
+        <dd>パス欄が空白であるときに出力されます。</dd>
+        <br>
+        <dt><b>- <font color="red">This file or path is invalid!</font></b></dt>
+        <dd>本アプリが対応していないファイル形式や、無効なパスが入力されているときに出力されます。</dd>
+        <br>
+        <dt><b>- <font color="red">Set a valid target!</font></b></dt>
+        <dd>ターゲット欄に無効な値が入力されているときに出力されます。</dd>
+        <br>
+        <dt><b>- <font color="red">Set valid scale limits!</font></b></dt>
+        <dd>スケールを Custom に設定した際、テキストボックスに無効が値が入力されているときに出力されます。</dd>
+        <br>
+        <dt><b>- <font color="red">The upper scale limit must be higher than the lower one!</font></b></dt>
+        <dd>スケールを Custom に設定した際、Upper scale limit に Lower scale limit よりも小さい値が入力されているときに出力されます。</dd>
+    </dl>
+    <br>
+    <h3 id="Error_3">3. 測定時のエラー</h3>
+    <dl>
+        <dt><b>- <font color="red">Analysis failed! Exit the ffmpeg.exe and rerun this analysis.</font></b></dt>
+        <dd>何らかの理由で分析が中断されたときに出力されます。</dd>
+        <dd>FFmpeg.exe が起動していた場合は、コンソールを閉じた上で再度測定を行ってください。</dd>
+        <dd>よくある中断理由の例として、測定中に ffmpeg.exe のコンソール画面がクリックされ、分析が一時停止したためというものがあります。</dd>
+        <dd>上記の対処法として、ffmpeg.exe のタイトルバーを右クリックし、プロパティから編集オプションの <b>"簡易編集モード"</b> のチェックを外して OK をクリックしてください。</dd>
+        <dd>こうすることで、分析中にコンソール画面をクリックしても分析が一時停止しなくなります。</dd>
+    </dl>
+    <br>
+    <p>その他、突然アプリが終了する、測定ができない等の不具合が発生した場合は、<br>お手数おかけしますが、制作者（いっぺー/Ippee、Twitter: @ippee1410）までご連絡ください。</p>
     <br>
 </body>
 <small><center>Copyright (c) 2020 Ippee</center></small>
