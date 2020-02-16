@@ -15,7 +15,7 @@
 # License agreement for matplotlib 3.1.3 | https://matplotlib.org/users/license.html
 # 
 
-version = "Ver. 2.2.0"
+version = "Ver. 2.2.1"
 
 import sys
 import re
@@ -26,7 +26,6 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.filedialog as filedialog
 import tkinter.messagebox as messagebox
-from tkinter import tix
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from src.FFmpeg_FileExt import getExtList
@@ -288,20 +287,20 @@ class CheckLoudness:
                 g_m = plt.plot(time, mLoud, label="Momentary", color="blue")
                 g_s = plt.plot(time, sLoud, label="Short-term", color="yellow")
                 g_i = plt.plot(time, iLoud, label="Integrated", color="red")
-                if self.target != "N/A":
-                        targetLine = plt.hlines([self.target], time[0], time[len(time)-1], "black", linestyles="dashed")
 
                 if scale[0] == " ":
                         RL = iLoud[round(len(iLoud)/2)] - 10 # 下方向の表示範囲
                         RH = max(mLoud) + 5 # 上方向の表示範囲
 
                         # Targetに合わせてグラフの表示範囲を変更
-                        if RL > self.target:
-                                RL = self.target - 2
-                                RH = max(mLoud) + 3
-                        if RH < self.target:
-                                RL = iLoud[len(iLoud)-1] - 3
-                                RH = self.target + 2
+                        if self.target != "N/A":
+                                targetLine = plt.hlines([self.target], time[0], time[len(time)-1], "black", linestyles="dashed")
+                                if RL > self.target:
+                                        RL = self.target - 2
+                                        RH = max(mLoud) + 3
+                                if RH < self.target:
+                                        RL = iLoud[len(iLoud)-1] - 3
+                                        RH = self.target + 2
                 else:
                         RL = scale[0]
                         RH = scale[1]

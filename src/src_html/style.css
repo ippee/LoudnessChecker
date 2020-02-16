@@ -1,0 +1,31 @@
+body {
+    margin: 30px;
+    background-color: #2E2E2E;
+    color: white;
+}
+
+a {
+    color: #2E9AFE;
+}
+    
+/*見出し*/
+h1 {
+    padding: 0.5em 0;
+    border-top: solid 5px white;
+    border-bottom: solid 5px white;
+}
+
+h2 {
+display: inline-block;
+border-bottom: double 5px white;
+}
+
+h3 {
+    display: inline-block;
+    border-bottom: solid 3px white;
+}
+
+h4 {
+    display: inline-block;
+    border-bottom: dashed 3px white;
+}
