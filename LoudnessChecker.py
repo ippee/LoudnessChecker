@@ -40,13 +40,14 @@ def resource_path(relative_path):
     return os.path.abspath(relative_path)
 
 
-# 文字列がfloatに変換できるかどうかを判断する関数
+# 文字列がfloatに変換できるかどうかを判別する関数
 def is_float(s):
         try:
                 float(s)
         except:
                 return False
         return True
+
 
 # キーワードをファイル名に含むファイルの一覧を取得
 def searchFile(keyword):
@@ -282,20 +283,20 @@ class CheckLoudness:
                 g_m = plt.plot(time, mLoud, label="Momentary", color="blue")
                 g_s = plt.plot(time, sLoud, label="Short-term", color="yellow")
                 g_i = plt.plot(time, iLoud, label="Integrated", color="red")
+                if self.target != "N/A":
+                        targetLine = plt.hlines([self.target], time[0], time[len(time)-1], "black", linestyles="dashed")
 
-                if scale[0] == "":
+                if scale[0] == " ":
                         RL = iLoud[round(len(iLoud)/2)] - 10 # 下方向の表示範囲
                         RH = max(mLoud) + 5 # 上方向の表示範囲
-                        if self.target != "N/A":
-                                targetLine = plt.hlines([self.target], time[0], time[len(time)-1], "black", linestyles="dashed")
 
-                                # Targetに合わせてグラフの表示範囲を変更
-                                if RL > self.target:
-                                        RL = self.target - 2
-                                        RH = max(mLoud) + 3
-                                if RH < self.target:
-                                        RL = iLoud[len(iLoud)-1] - 3
-                                        RH = self.target + 2
+                        # Targetに合わせてグラフの表示範囲を変更
+                        if RL > self.target:
+                                RL = self.target - 2
+                                RH = max(mLoud) + 3
+                        if RH < self.target:
+                                RL = iLoud[len(iLoud)-1] - 3
+                                RH = self.target + 2
                 else:
                         RL = scale[0]
                         RH = scale[1]
@@ -310,6 +311,105 @@ class CheckLoudness:
 
 
 ### GUI作成 ###
+class SetScaleWidget(ttk.Frame):
+        def __init__(self, root):
+                super().__init__(root)
+                self.pack()
+
+                ## Scale
+                rangeList = ["Custom", "Automatic", "EBU+18", "EBU+9"]
+                def_rangeVer = tk.StringVar()
+                self.upper = tk.StringVar()
+                self.lower = tk.StringVar()
+
+                if settings[3] == "EBU+9":
+                        ini_state = "readonly"
+                        self.upper.set("-14")
+                        self.lower.set("-41")
+                elif settings[3] == "EBU+18":
+                        ini_state = "readonly"
+                        self.upper.set("-5")
+                        self.lower.set("-59")
+                elif settings[3] == "Automatic":
+                        ini_state = "readonly"
+                        self.upper.set(" ")
+                        self.lower.set(" ")
+                elif settings[3] == "Custom":
+                        ini_state = "active"
+                        self.upper.set(settings[5])
+                        self.lower.set(settings[4])
+                
+
+                label_range = ttk.Label(self,justify="center",text="\nScale", font=("","14","bold"))
+                label_range.pack(side="top")
+
+                self.label_explainRange = ttk.Label(self,justify="center",text="Set a range of visible loudness", font=("","12"))
+                self.label_explainRange.pack(side="top", pady=5)
+
+                ### フレーム作成
+                frm_range = tk.Frame(self)
+                frm_range.pack(side="top", pady=5)
+
+                entry_upper = ttk.Entry(frm_range, justify="center", text="", textvariable=self.upper, width=5, state=ini_state, font=("","10"))
+                entry_lower = ttk.Entry(frm_range, justify="center", text="", textvariable=self.lower, width=5, state=ini_state, font=("","10"))
+                label_tilde = ttk.Label(frm_range,justify="center",text="～", font=("","12"))
+                label_LUFS = ttk.Label(frm_range,justify="center",text="LUFS", font=("","12"))
+                
+                self.spin_range = tk.Spinbox(frm_range, justify="center", values=rangeList, textvariable=def_rangeVer, width=12, state="readonly", font=("", "12"))
+                self.spin_range.config(command=lambda: self.chengeUpLowValues(self.spin_range, entry_upper, entry_lower, self.upper, self.lower))
+                def_rangeVer.set(settings[3]) # 後からしか初期値を指定できない
+
+                self.spin_range.pack(side="left", padx=10)
+                entry_lower.pack(side="left", padx=5)
+                label_tilde.pack(side="left", padx=5)
+                entry_upper.pack(side="left", padx=5)
+                label_LUFS.pack(side="left", padx=5)
+        
+
+        # optMenuの選択肢によってentry_upper/lowerの値を変える
+        def chengeUpLowValues(self, spin_range, entry_upper, entry_lower, upper, lower):
+                if spin_range.get() == "EBU+9":
+                        entry_upper.config(state="readonly", textvariable=upper.set("-14"))
+                        entry_lower.config(state="readonly", textvariable=lower.set("-41"))
+                elif spin_range.get() == "EBU+18":
+                        entry_upper.config(state="readonly", textvariable=upper.set("-5"))
+                        entry_lower.config(state="readonly", textvariable=lower.set("-59"))
+                elif spin_range.get() == "Automatic":
+                        entry_upper.config(state="readonly", textvariable=upper.set(" "))
+                        entry_lower.config(state="readonly", textvariable=lower.set(" "))
+                elif spin_range.get() == "Custom":
+                        entry_upper.config(state="active", textvariable=upper.set(settings[5]))
+                        entry_lower.config(state="active", textvariable=lower.set(settings[4]))
+        
+
+        # Upper/Lower Scale Limitの取得
+        def get_Lower_Upper_ScaleLimit(self):
+                scale = [self.lower.get(), self.upper.get()]
+                if scale[0] == " " and scale[1] == " ": # scaleがAutomaticのとき
+                        pass
+                else:
+                        for i in range(len(scale)):
+                                if is_float(scale[i]) == False:
+                                        messagebox.showerror("ERROR", "Set valid scale limits!")
+                                        return "break"
+                                scale[i] = float(scale[i])
+
+                        if scale[0] >= scale[1]:
+                                messagebox.showerror("ERROR", "The upper scale limit must be higher than the lower one!")
+                                return "break"
+                return scale
+        
+
+        # 使用するスケール名の取得
+        def get_ScaleName(self):
+                return self.spin_range.get()
+        
+        # 説明文を変更
+        def chengeDescription(self):
+                self.label_explainRange.config(text="Set a default range of visible loudness")
+
+
+
 class LoudnessCheckerGUI(ttk.Frame):
         def __init__(self, root, settings, ext_list):
                 super().__init__(root)
@@ -384,56 +484,12 @@ class LoudnessCheckerGUI(ttk.Frame):
 
 
                 ## Scale
-                rangeList = ["Custom", "Automatic", "EBU+18", "EBU+9"]
-                self.def_rangeVer = tk.StringVar()
-                self.upper =tk.StringVar()
-                self.lower =tk.StringVar()
-
-                if settings[3] == "EBU+9":
-                        ini_state = "readonly"
-                        self.upper.set("-14")
-                        self.lower.set("-41")
-                elif settings[3] == "EBU+18":
-                        ini_state = "readonly"
-                        self.upper.set("-5")
-                        self.lower.set("-59")
-                elif settings[3] == "Automatic":
-                        ini_state = "readonly"
-                        self.upper.set("")
-                        self.lower.set("")
-                elif settings[3] == "Custom":
-                        ini_state = "active"
-                
-
-                label_range = ttk.Label(frm_input,justify="center",text="\nScale", font=("","14","bold"))
-                label_range.pack(side="top")
-
-                label_explainRange = ttk.Label(frm_input,justify="center",text="Set a range of visible loudness", font=("","12"))
-                label_explainRange.pack(side="top", pady=5)
-
-                ### フレーム作成
-                frm_range = tk.Frame(frm_input)
-                frm_range.pack(side="top", pady=5)
-
-                entry_upper = ttk.Entry(frm_range, justify="center", text="", textvariable=self.upper, width=5, state=ini_state, font=("","10"))
-                entry_lower = ttk.Entry(frm_range, justify="center", text="", textvariable=self.lower, width=5, state=ini_state, font=("","10"))
-                label_tilde = ttk.Label(frm_range,justify="center",text="～", font=("","12"))
-                label_LUFS = ttk.Label(frm_range,justify="center",text="LUFS", font=("","12"))
-                
-                opt_range = tk.Spinbox(frm_range, justify="center", values=rangeList, textvariable=self.def_rangeVer, width=12, state="readonly", font=("", "12"))
-                opt_range.config(command=lambda: self.chengeUpLowValues(opt_range, entry_upper, entry_lower, self.upper, self.lower))
-                self.def_rangeVer.set(settings[3]) # 後からしか初期値を指定できない
-
-                opt_range.pack(side="left", padx=10)
-                entry_lower.pack(side="left", padx=5)
-                label_tilde.pack(side="left", padx=5)
-                entry_upper.pack(side="left", padx=5)
-                label_LUFS.pack(side="left", padx=5)
+                self.scale_main = SetScaleWidget(frm_input)
 
 
                 ## Analyze (Resetボタン欲しい)
                 self.button_analyze = ttk.Button(frm_input,text="Analyze",command = self.clickedAnalyze)
-                self.button_analyze.pack(side="top", pady=20)
+                self.button_analyze.pack(side="top", pady=22)
 
 
                 ## Result
@@ -444,9 +500,6 @@ class LoudnessCheckerGUI(ttk.Frame):
                 self.textbox.pack(side="top", padx=5)
 
 
-        # スケールのウィジェットをまとめて配置
-
-
         # ファイルダイアログを開いてentry_filepathに反映させる
         def openFileDialog(self):
                 file = filedialog.askopenfilename(initialdir = self.correntDir)
@@ -454,22 +507,6 @@ class LoudnessCheckerGUI(ttk.Frame):
                         return "break"
                 self.correntDir = file[0:file.rfind( "/" ) + 1] # 再びダイアログを開いたとき、さっき選択したファイルの所からスタートする
                 self.filepath.set(file)
-        
-
-        # optMenuの選択肢によってentry_upper/lowerの値を変える
-        def chengeUpLowValues(self, opt, entry_upper, entry_lower, upper, lower):
-                if opt.get() == "EBU+9":
-                        entry_upper.config(state="readonly", textvariable=upper.set("-14"))
-                        entry_lower.config(state="readonly", textvariable=lower.set("-41"))
-                elif opt.get() == "EBU+18":
-                        entry_upper.config(state="readonly", textvariable=upper.set("-5"))
-                        entry_lower.config(state="readonly", textvariable=lower.set("-59"))
-                elif opt.get() == "Automatic":
-                        entry_upper.config(state="readonly", textvariable=upper.set(""))
-                        entry_lower.config(state="readonly", textvariable=lower.set(""))
-                elif opt.get() == "Custom":
-                        entry_upper.config(state="active")
-                        entry_lower.config(state="active")
 
 
         # アナライズボタンクリック時
@@ -487,20 +524,9 @@ class LoudnessCheckerGUI(ttk.Frame):
                 else:
                         target = float(target)
                 
-                scale = [self.lower.get(), self.upper.get()]
-                if scale[0] == "" and scale[1] == "": # scaleがAutomaticのとき
-                        pass
-                else:
-                        for i in range(len(scale)):
-                                if is_float(scale[i]) == False:
-                                        messagebox.showerror("ERROR", "Set valid scale values!")
-                                        return
-                                scale[i] = float(scale[i])
-
-                        if scale[0] >= scale[1]:
-                                messagebox.showerror("ERROR", "The upper scale limit must be higher than the lower one!")
-                                return
-
+                scale = self.scale_main.get_Lower_Upper_ScaleLimit() # Upper/Lower Scale Limitの取得
+                if scale == "break":
+                        return
 
                 path = self.entry_filepath.get()
                 path = deleteStr(path, '"', "'") # pathに " とか ' が含まれていても一旦消す
@@ -570,38 +596,53 @@ class LoudnessCheckerGUI(ttk.Frame):
 
                 # 設定ウインドウ表示
                 pref = tk.Toplevel(self) # Preferencesのウインドウ
-                pref.geometry("250x150")
+                pref.geometry("350x270")
                 pref.resizable(0,0)
                 pref.title("Preferences")
 
                 # ウィジェット配置
-                label_title_p = ttk.Label(pref, justify="left", text="Default Settings", font=("","14","bold"))
+                label_title_p = ttk.Label(pref, justify="left", text="Target", font=("","14","bold"))
                 label_title_p.pack(side="top", padx=5, pady=5)
 
-                label_target_p = ttk.Label(pref, justify="center", text="Default target value [LUFS]", font=("","12"))
+                label_target_p = ttk.Label(pref, justify="center", text="Set a default loudness target [LUFS]", font=("","12"))
                 label_target_p.pack(side="top", padx=5, pady=5)
 
                 entry_target_p = ttk.Entry(pref,text="", font=("","10"), width=100, justify="center", textvariable=def_target)
                 entry_target_p.pack(side="top", padx=5, pady=5)
 
-                button_save_p = ttk.Button(pref, text="Save", command = lambda: self.saveSettings(pref, def_target))
-                button_save_p.pack(side="left", padx=20, pady=5)
+                scale_pref = SetScaleWidget(pref)
+                scale_pref.chengeDescription()
 
-                button_close_p = ttk.Button(pref, text="Close", command = pref.destroy)
-                button_close_p.pack(side="right", padx=20, pady=5)
+                frm_button_p = ttk.Frame(pref)
+                frm_button_p.pack(side="top", pady=20)
+
+                button_save_p = ttk.Button(frm_button_p, text="Save", command = lambda: self.saveSettings(pref, def_target, scale_pref))
+                button_save_p.pack(side="left", padx=10)
+
+                button_close_p = ttk.Button(frm_button_p, text="Close", command = pref.destroy)
+                button_close_p.pack(side="left", padx=10)
         
 
         # 設定の保存
-        def saveSettings(self, pref, def_target):
+        def saveSettings(self, pref, def_target, scale_pref):
                 if is_float(def_target.get()) == True:
                         target = def_target.get()
-                elif def_target.get()=="":
+                elif def_target.get() == "":
                         target = "N/A"
                 elif is_float(def_target.get()) == False:
                         messagebox.showerror("ERROR", "Set a valid target!")
                         return "break" # "break" ないとPreferencesが閉じる
+                
+                scale = scale_pref.get_Lower_Upper_ScaleLimit()
+                if scale == "break":
+                        return
+                
+                scaleName = scale_pref.get_ScaleName()
 
                 self.settings[1] = target
+                self.settings[3] = scaleName
+                self.settings[4] = scale[0]
+                self.settings[5] = scale[1]
 
                 # setting.ini書き出し
                 f = open("setting.ini", 'w', encoding='utf-8')
@@ -639,7 +680,7 @@ if __name__ == '__main__':
         # 初期設定読み込み
         if "setting.ini" not in os.listdir(os.getcwd()):
                 messagebox.showwarning("WARNING", '"setting.ini" is missing!\nInitialize all settings.')
-                factory_settings = '[Target_value] ;Enter a float or "N/A"(strings)\nN/A\n[Scale]\nEBU+9'
+                factory_settings = '[Target_value] ;Enter a float or "N/A"(strings)\nN/A\n[Scale]\nEBU+9\n-41\n-14'
                 f = open("setting.ini", 'w', encoding='utf-8')
                 f.write(factory_settings)
                 f.close()
